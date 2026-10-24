@@ -1,0 +1,122 @@
+﻿/* Nav Bar (Pancake Menu, Home, and Search icons) */
+.nav-bar {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 20px 24px 0 16px; /* top right bottom left */
+}
+
+/* Removes the default button styling  */
+.menu-button {
+    display: flex;
+    flex-direction: column; /* stacks the three spans vertically to make pancake menu*/
+    gap: 4px; /* space between the bars */
+    width: 50px;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+    /* Each empty <span> becomes one orange bar */
+    .menu-button span {
+        display: block; /* spans are inline by default, and inline elements ignore height */
+        height: 9px;
+        border-radius: 4px;
+        background: var(--rust);
+    }
+
+/* The group of icons on the right (the home and search buttons) */
+.nav-bar-actions {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+/* Menu */
+
+/* position: fixed places an element relative to the screen, not the page,
+   so the menu stays in place even if the page is scrolled. */
+.menu-backdrop {
+    position: fixed;
+    inset: 0; /* top/right/bottom/left */
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 10; /* higher z-index = drawn on top */
+}
+
+.menu-panel {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: min(300px, 85vw); /* 300px, or 85% of the screen on small phones */
+    padding: 20px 16px;
+    overflow-y: auto; /* scrolls if the menu is taller than the screen */
+    background: var(--teal);
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.4);
+    z-index: 11;
+    animation: slide-in 0.2s ease-out;
+}
+
+/* Slides the panel in from the left when it appears */
+@keyframes slide-in {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+}
+
+.menu-close {
+    display: block;
+    margin: 0 0 20px auto; /* margin-left: auto pushes it to the right */
+    background: none;
+    border: none;
+    color: var(--cream);
+    font-size: 28px;
+    cursor: pointer;
+}
+
+/* Lists come with bullets and indentation by default. Remove them to match minimal look of mockup. */
+.menu-list,
+.submenu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Shared style for both <a> and <button>, so they look identical */
+.menu-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 14px 16px;
+    border: none;
+    border-radius: 6px;
+    background: var(--cream);
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-size: 22px;
+    text-align: left;
+    text-decoration: none; /* removes underline from hyperlinks */
+    cursor: pointer;
+}
+
+.submenu {
+    margin: 10px 0 0 24px; /* indents the sub cards under Lists */
+    gap: 8px;
+}
+
+.menu-card.sub {
+    font-size: 18px;
+    border-left: 6px solid var(--rust);
+}
+
+.chevron { /* arrow that expands the Bird Lists */
+    transition: transform 0.2s;
+}
+
+    .chevron.open {
+        transform: rotate(180deg); /* arrow then collapses the Bird Lists */
+    }

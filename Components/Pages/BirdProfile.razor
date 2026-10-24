@@ -1,0 +1,82 @@
+@page "/bird/{Id:int}"
+@inject BirdService BirdService
+
+<NavBar />
+
+@if (loading)
+{
+    <p>Loading…</p>
+}
+else if (bird is null)
+{
+    <p>Bird not found.</p>
+}
+else
+{
+    <PageTitle>@bird.CommonName</PageTitle>
+    //This is where each birds photo attribute will be displayed.
+    <img src="@bird.PhotoUrl" alt="Photo of a @bird.CommonName" />
+    @if (featured is not null)
+    {
+        <p class="photo-credit">
+            Photo:
+            @if (featured.PageUrl is not null)
+            {
+                <a href="@featured.PageUrl" target="_blank" rel="noopener">@featured.Author</a>
+            }
+            else
+            {
+                @featured.Author
+            }
+            @if (featured.LicenseUrl is not null)
+            {
+                <text>, </text><a href="@featured.LicenseUrl" target="_blank" rel="noopener">@featured.LicenseName</a>
+            }
+            else
+            {
+                <text>, @featured.LicenseName</text>
+            }
+            <text>, via @featured.Source</text>
+        </p>
+    }
+
+    <h1>@bird.CommonName</h1>
+    <p><em>@bird.LatinName</em></p>
+    @if (bird.LatinPronunciation is not null)
+    {
+        <p class="pronunciation">@bird.LatinPronunciation</p>
+    }
+
+    @if (bird.Description is not null)
+    {
+        <p>@bird.Description</p>
+    }
+    //Replace later with short description 
+    <dl class="bird-facts">
+        <dt>Family</dt>
+        <dd>@bird.FamilyName</dd>
+        <dt>Size</dt>
+        <dd>@bird.SizeText</dd>
+        <dt>Colors</dt>
+        <dd>@string.Join(", ", bird.Colors)</dd>
+        <dt>Habitats</dt>
+        <dd>@string.Join(", ", bird.Habitats)</dd>
+    </dl>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Bird? bird;
+    private BirdImage? featured;
+    private bool loading = true;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        loading = true;
+        bird = await BirdService.GetByIdAsync(Id);
+        featured = bird?.Images.FirstOrDefault(i => i.IsFeatured);
+        loading = false;
+    }
+}

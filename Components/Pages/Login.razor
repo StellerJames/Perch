@@ -1,0 +1,66 @@
+﻿@page "/login"
+@using System.ComponentModel.DataAnnotations
+@inject UserService UserService
+@inject CurrentUser CurrentUser
+@inject NavigationManager Navigation
+
+<PageTitle>LogIn</PageTitle>
+<NavBar ShowHome="true" />
+<h1>Log In</h1>
+
+
+    @if (CurrentUser.IsLoggedIn)
+{
+    <p>You're logged in as @CurrentUser.Username.</p>
+    <button type="button" @onclick="CurrentUser.LogOut">Log Out</button>
+}
+
+<EditForm Model="form" OnValidSubmit="LoginAsync">
+    <DataAnnotationsValidator />
+
+    <label for="username">Username</label>
+    <InputText id="username" @bind-Value="form.Username" />
+    <ValidationMessage For="() => form.Username" />
+
+    
+    <label for="password">Password</label>
+    <InputText id="password" type="password" @bind-Value="form.Password" />
+    <ValidationMessage For="() => form.Password" />
+
+       <button type="submit">Log In</button>
+</EditForm>
+
+    @if (errorMessage is not null)
+    {
+        <p class="error">@errorMessage</p>
+    <p>Don't have an account? <a href="create-account">Create one</a></p>
+    }
+
+@code {
+    private LoginForm form = new();
+    private string? errorMessage;
+
+    private class LoginForm
+    {
+        [Required]
+        public string Username { get; set; } = "";
+
+        [Required]
+        public string Password { get; set; } = "";
+    }
+
+    private async Task LoginAsync()
+    {
+        var user = await UserService.LoginAsync(form.Username, form.Password);
+
+        if (user is null)
+        {
+            errorMessage = "Username or password is incorrect.";
+        }
+        else
+        {
+            CurrentUser.LogIn(user);
+            Navigation.NavigateTo("");
+        }
+    }
+}

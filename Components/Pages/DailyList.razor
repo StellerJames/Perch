@@ -1,0 +1,135 @@
+﻿@page "/daily-list"
+@inject SightingService SightingService
+@inject BirdService BirdService
+@inject CurrentUser CurrentUser
+
+<PageTitle>Daily List</PageTitle>
+<NavBar ShowHome="true" />
+<h1>Daily List</h1>
+
+@if (!CurrentUser.IsLoggedIn)
+{
+    <p>Please <a href="login">log in</a> to see your Daily List.</p>
+}
+else if (sightings is null)
+{
+    <p>Loading</p>
+}
+else
+{
+    <section class="add-sighting">
+        <h2>Add a sighting</h2>
+
+        <label for="bird">Bird</label>
+        <select id="bird" @bind="newBirdId">
+            <option value="0">Choose a bird…</option>
+            @foreach (var bird in allBirds)
+            {
+                <option value="@bird.BirdId">@bird.CommonName</option>
+            }
+        </select>
+
+        <label for="count">How many?</label>
+        <input id="count" type="number" min="1" @bind="newCount" />
+
+        <button type="button" @onclick="AddSightingAsync">Add</button>
+    </section>
+
+    @if (!sightings.Any())
+    {
+        <p>No birds logged yet today.</p>
+    }
+
+    @foreach (var sighting in sightings)
+    {
+        <div class="sighting-card">
+            @if (editingId == sighting.SightingId)
+            {
+                <select @bind="editing.BirdId">
+                    @foreach (var bird in allBirds)
+                    {
+                        <option value="@bird.BirdId">@bird.CommonName</option>
+                    }
+                </select>
+                <input type="number" min="1" @bind="editing.BirdCount" />
+
+                <button type="button" @onclick="SaveEditAsync">Save</button>
+                <button type="button" @onclick="CancelEdit">Cancel</button>
+                <button type="button" @onclick="DeleteSightingAsync">Delete</button>
+            }
+            else
+            {
+                <h2>@sighting.CommonName</h2>
+                <p><em>@sighting.LatinName</em></p>
+                <p>Count: @sighting.BirdCount</p>
+                <button type="button" @onclick="() => StartEdit(sighting)">Edit</button>
+            }
+        </div>
+    }
+}
+
+@code {
+    private int userId;
+    private List<Sighting>? sightings;   //null until the database answers
+    private List<Bird> allBirds = new(); //used for the "which bird?" dropdowns
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (CurrentUser.UserId is null) return;   //not logged in, so stop here
+        userId = CurrentUser.UserId.Value;
+
+        allBirds = await BirdService.GetAllAsync();
+        await LoadSightingsAsync();
+    }
+
+    //Asks the database for today's list again. Gets called after every bird add, edit or delete.
+    private async Task LoadSightingsAsync()
+    {
+        sightings = await SightingService.GetTodayAsync(userId);
+    }
+    private int newBirdId;      //0 means "nothing chosen yet"
+    private int newCount = 1;
+
+    private async Task AddSightingAsync()
+    {
+        if (newBirdId == 0 || newCount < 1) return;   //ignore incomplete forms
+
+        await SightingService.AddAsync(userId, newBirdId, newCount);
+
+        newBirdId = 0;   //reset the form for the next bird
+        newCount = 1;
+        await LoadSightingsAsync();
+    }
+
+    private int? editingId;              //which card is open for editing (null = none)
+    private Sighting editing = new();    //a copy we change, so "Cancel" leaves the original alone
+
+    private void StartEdit(Sighting sighting)
+    {
+        editingId = sighting.SightingId;
+        editing = new Sighting
+        {
+            SightingId = sighting.SightingId,
+            UserId = sighting.UserId,
+            BirdId = sighting.BirdId,
+            BirdCount = sighting.BirdCount
+        };
+    }
+
+    private void CancelEdit() => editingId = null;
+
+    private async Task SaveEditAsync()
+    {
+        if (editing.BirdCount < 1) return;
+        await SightingService.UpdateAsync(editing);
+        editingId = null;
+        await LoadSightingsAsync();
+    }
+
+    private async Task DeleteSightingAsync()
+    {
+        await SightingService.DeleteAsync(editing.SightingId, userId);
+        editingId = null;
+        await LoadSightingsAsync();
+    }
+}

@@ -1,0 +1,71 @@
+﻿@page "/create-account"
+@using System.ComponentModel.DataAnnotations
+@inject UserService UserService
+@inject NavigationManager Navigation
+
+<PageTitle>Create Account</PageTitle>
+<NavBar ShowHome="true" />
+<h1> Create Account </h1>
+
+<EditForm Model="form" OnValidSubmit="CreateAccountAsync">
+    <DataAnnotationsValidator />
+
+    <label for="username">Username</label>
+    <InputText id="username" @bind-Value="form.Username" />
+    <ValidationMessage For="() => form.Username" />
+
+    
+    <label for="email">Email</label>
+    <InputText id="email" @bind-Value="form.Email" />
+    <ValidationMessage For="() => form.Email" />
+
+    <label for="password">Password</label>
+    <InputText id="password" type="password" @bind-Value="form.Password" />
+    <ValidationMessage For="() => form.Password" />
+
+    <label for="confirmPassword">Confirm Password</label>
+    <InputText id="confirmPassword" type="password" @bind-Value="form.ConfirmPassword" />
+    <ValidationMessage For="() => form.ConfirmPassword" />
+
+    <button type="submit">Create Account</button>
+</EditForm>
+
+@if (errorMessage is not null)
+{
+    <p class="error">@errorMessage</p>
+    <p>Already have an account? <a href="login">Log in</a></p>
+}
+
+@code {
+    private SignUpForm form = new();
+    private string? errorMessage;
+
+    private class SignUpForm
+    {
+        [Required]
+        public string Username { get; set; } = "";
+
+        [Required, EmailAddress]
+        public string Email { get; set; } = "";
+
+        [Required, MinLength(8)]
+        public string Password { get; set; } = "";
+
+        [Required, Compare(nameof(Password), ErrorMessage = "Passwords do not match.")]
+        public string ConfirmPassword { get; set; } = "";    
+    }
+
+    private async Task CreateAccountAsync()
+    {
+        var created = await UserService.CreateAsync(form.Username, form.Email, form.Password);
+
+        if (created)
+        {
+            Navigation.NavigateTo("login");
+        }
+        else
+        {
+            errorMessage = "That username or email is already taken.";
+        }
+    }
+}

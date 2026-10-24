@@ -1,0 +1,54 @@
+@page "/search"
+@inject BirdService BirdService
+
+<PageTitle> Search Perch</PageTitle>
+<NavBar ShowHome="true" />
+<h1> Search Perch </h1>
+
+@* Search Box *@
+@* @bind:event="oninput" updates on every keystroke rather than waiting for the field to deactivate *@
+<input type="search"
+       placeholder="Search for birds in your area"
+       aria-label="Search for birds in your area"
+       @bind="searchText"
+       @bind:event="oninput"
+       @bind:after="SearchAsync" />
+
+@if (birds is null)
+{
+    <p>Loading birds…</p>
+}
+else if (!birds.Any())
+{
+    <p>No birds match your search.</p>
+}
+else
+{
+    @foreach (var bird in birds)
+    {
+        <BirdCard Bird="bird" />
+    }
+}
+
+@code {
+    private string searchText = "";
+    private List<Bird>? birds;   //null until the first search comes back
+
+    protected override async Task OnInitializedAsync()
+    {
+        await SearchAsync();
+    }
+
+    //This runs on every keystroke, so several searches can be running at once.
+    //A slow, older search might finish last and overwrite newer results.
+    //To prevent that, only show results if the box still has the text a user searched for.
+    private async Task SearchAsync()
+    {
+        var text = searchText;
+        var results = await BirdService.SearchAsync(text);
+        if (text == searchText)
+        {
+            birds = results;
+        }
+    }
+}

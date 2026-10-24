@@ -1,0 +1,110 @@
+﻿<header class="nav-bar">
+    <button type="button" class="menu-button"
+            aria-label="Open menu"
+            aria-controls="main-menu"
+            aria-expanded="@(menuOpen ? "true" : "false")"
+            @onclick="ToggleMenu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <nav class="nav-bar-actions" aria-label="Quick links">
+        @if (ShowHome)
+        {
+            <a href="" class="icon-link" aria-label="Home">
+                <img src="images/icons/homeIcon.svg" alt="" />
+            </a>
+        }
+
+        @if (ShowSearch)
+        {
+            <a href="search" class="icon-link" aria-label="Search Perch">
+                <img src="images/icons/search.svg" alt="" />
+            </a>
+        }
+    </nav>
+</header>
+
+@if (menuOpen)
+{
+    @* A dark layer behind the menu. Click outside the menu to close it. *@
+    <div class="menu-backdrop" @onclick="CloseMenu"></div>
+
+    <nav id="main-menu" class="menu-panel" aria-label="Main menu">
+        <button type="button" class="menu-close" aria-label="Close menu" @onclick="CloseMenu">✕</button>
+
+        <ul class="menu-list">
+            <li><a href="" class="menu-card" @onclick="CloseMenu">Home</a></li>
+
+            <li>
+                <button type="button" class="menu-card"
+                        aria-expanded="@(listsOpen ? "true" : "false")"
+                        @onclick="ToggleLists">
+                    Lists
+                    <span class="chevron @(listsOpen ? "open" : "")" aria-hidden="true">▾</span>
+                </button>
+
+                @if (listsOpen)
+                {
+                    <ul class="submenu">
+                        <li><a href="daily-list" class="menu-card sub" @onclick="CloseMenu">Daily List</a></li>
+                        <li><a href="life-list" class="menu-card sub" @onclick="CloseMenu">Life List</a></li>
+                        <li><a href="nemesis-list" class="menu-card sub" @onclick="CloseMenu">Nemesis List</a></li>
+                    </ul>
+                }
+            </li>
+
+            <li><a href="search" class="menu-card" @onclick="CloseMenu">Search Perch</a></li>
+            <li><a href="quiz" class="menu-card" @onclick="CloseMenu">Bird Quiz</a></li>
+            <li><a href="bird-id" class="menu-card" @onclick="CloseMenu">ID Tool</a></li>
+            <li>
+                <button type="button" class="menu-card"
+                        aria-expanded="@(accountOpen ? "true" : "false")"
+                        @onclick="ToggleAccount">
+                    Account
+                    <span class="chevron @(accountOpen ? "open" : "")" aria-hidden="true">▾</span>
+                </button>
+
+                @if (accountOpen)
+                {
+                    <ul class="submenu">
+                        <li><a href="login" class="menu-card sub" @onclick="CloseMenu">Log In</a></li>
+                        <li><a href="create-account" class="menu-card sub" @onclick="CloseMenu">Create Account</a></li>
+                    </ul>
+                }
+            </li>
+        </ul>
+    </nav>
+}
+
+@code {
+    //"= true" means the icon shows by default.
+    //A page can hide it by writing <NavBar ShowHome="false" />.
+
+    [Parameter]
+    public bool ShowHome { get; set; } = true;
+
+    [Parameter]
+    public bool ShowSearch { get; set; } = true;
+
+    //Private fields hold data used only inside this component.
+    //[Parameter] properties bring data in from the outside parent page.
+
+    private bool menuOpen;
+    private bool listsOpen;
+    private bool accountOpen;
+
+    private void ToggleMenu() => menuOpen = !menuOpen;
+
+    private void ToggleLists() => listsOpen = !listsOpen;
+
+    private void ToggleAccount() => accountOpen = !accountOpen;
+
+    private void CloseMenu()
+    {
+        menuOpen = false;    //Pancake menu remains closed until interacted with.
+        listsOpen = false;   //collapses the Lists pancake option
+        accountOpen = false; //collapses the Accounts pancake option
+    }
+}
