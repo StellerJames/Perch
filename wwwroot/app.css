@@ -1,3 +1,4 @@
+/*Global Style Settings*/
 :root {
     --teal: #1D4744; /*page background*/
     --rust: #A34D27; /*pancake menu, buttons*/
@@ -28,7 +29,6 @@ html, body {
     width: 40px;
     height: 40px;
 }
-
 
 h1:focus {
     outline: none;
@@ -67,7 +67,9 @@ h1 {
     margin: 16px;
 }
 
-/*Daily List: the "Add a sighting" form.*/
+/*Daily List*/
+
+/*"Add a sighting" form.*/
 .add-sighting {
     display: flex;
     flex-wrap: wrap; /*items move to a new line when they run out of room*/
@@ -137,8 +139,9 @@ h1 {
         .sighting-card button:hover {
             filter: brightness(1.15); /*slightly lighter when hovered*/
         }
+/*Search Page*/
 
-/*Search Perch: one card per bird (BirdCard component).*/
+/*One card per bird (BirdCard component).*/
 .bird-card {
     display: flex; /*photo on the left, names on the right*/
     align-items: center;
@@ -168,3 +171,11 @@ h1 {
     .bird-card p {
         margin: 0;
     }
+
+/*Bird Quiz*/
+/*.quiz-photo {
+    width: 100%;*/ /* fill the phone's width */
+    /*max-width: 400px;*/ /* but never grow past this on bigger screens */
+    /*aspect-ratio: 1;*/ /* keep it square */
+    /*object-fit: cover;*/ /* crop instead of stretching */
+/*}*/

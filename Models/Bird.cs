@@ -28,6 +28,13 @@ namespace Perch.Models
             ? "images/icons/perchLogo.svg"
             : $"images/birdPhotos/{PhotoFile}";
 
+        //Adds small thumbnail to bird lists.
+        //Every thumbnail is a .jpg, even if original is .png or .webp. 
+        public string ThumbUrl => PhotoFile is null
+            ? "images/icons/perchLogo.svg"
+            : 
+            $"images/birdThumbs/{Path.ChangeExtension(PhotoFile, ".jpg")}";
+
         //turns the two size numbers into readable text for the profile page
         public string SizeText
         {
