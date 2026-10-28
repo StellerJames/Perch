@@ -1,0 +1,18 @@
+﻿/*center all the intro text*/
+.nemesis-intro {
+    text-align: center;
+}
+
+    /*put the "…" on its own line under the summary*/
+    .nemesis-intro .more {
+        display: block;
+    }
+
+.nemesis-intro summary {
+    cursor: pointer;     /*hand cursor to appear clickable*/
+}
+
+/*when the details box is open, hide the ellipsis*/
+.nemesis-intro[open] .more {
+    display: none;
+}

@@ -1,9 +1,107 @@
 ﻿@page "/nemesis-list"
+@inject NemesisService NemesisService
+@inject BirdService BirdService
+@inject CurrentUser CurrentUser
 
-<h3>NemesisList</h3>
-
+<PageTitle>Nemesis List</PageTitle>
 <NavBar ShowHome="true" />
+<h1>Nemesis List</h1>
 
-@code {
+<details class="nemesis-intro">
+    <summary>
+        A nemesis bird is the ultimate "one that got away."<span class="more">…</span>
+    </summary>
+    <p>It is a bird species that persistently eludes you, no matter how many times you wake up at dawn or stake out a specific bush to find it. It doesn't have to be a rare bird; it just feels like it is personally avoiding you.</p>
+    <p>If a bird has broken your heart or ruined your weekend plans, it is officially your nemesis bird.</p>
+</details>
+
+@if (!CurrentUser.IsLoggedIn)
+{
+    <p>Please <a href="login">log in</a> to see your Nemesis List.</p>
+}
+else if (nemeses is null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <section class="add-nemesis">
+        <h2>Name Your Nemesis</h2>
+
+        <label for="nemesis-bird">Bird</label>
+        <select id="nemesis-bird" @bind="newBirdId">
+            <option value="0">Choose a bird…</option>
+            @foreach (var bird in choices)
+            {
+                <option value="@bird.BirdId">@bird.CommonName</option>
+            }
+        </select>
+
+        <button type="button" @onclick="AddNemesisAsync">Add</button>
+    </section>
+
+    @if (!nemeses.Any())
+    {
+        <p>No nemesis birds yet. Lucky you!</p>
+    }
+
+    @foreach (var bird in nemeses)
+    {
+        <div class="nemesis-item">
+            <BirdCard Bird="bird" />
+            <button type="button" class="remove-button"
+                    aria-label="Remove @bird.CommonName from Nemesis List"
+                    @onclick="() => RemoveNemesisAsync(bird.BirdId)">
+                <img src="images/icons/trash.svg" alt="" />
+            </button>
+        </div>
+    }
 
 }
+
+@code {
+    private int userId;
+    private List<Bird>? nemeses; //null until answered by DB.
+    private List<Bird> allBirds = new(); //every bird in DB
+    private List<Bird> lifeList = new(); //birds the user has already seen
+    private List<Bird> choices = new(); //dropdown options
+    private int newBirdId; //0 = no choice made
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (CurrentUser.UserId is null) return; //not logged in, stop here
+        userId = CurrentUser.UserId.Value;
+
+        allBirds = await BirdService.GetAllAsync();
+        lifeList = await BirdService.GetLifeListAsync(userId);
+        await LoadNemesesAsync();
+    }
+
+    //Asks the DB for the list to rebuid dropdown.
+    //Called after every add/remove.
+    private async Task LoadNemesesAsync()
+    {
+        nemeses = await NemesisService.GetNemesisListAsync(userId);
+
+        //Dropdown: leave out birds already seen (in Life List) and birds already added to Nemesis List.
+        choices = allBirds
+           .Where(b => !lifeList.Any(seen => seen.BirdId == b.BirdId))
+           .Where(b => !nemeses.Any(n => n.BirdId == b.BirdId))
+           .ToList();
+    }
+    private async Task AddNemesisAsync()
+    {
+        if (newBirdId == 0) return;   //nothing chosen
+
+        await NemesisService.AddAsync(userId, newBirdId);
+        newBirdId = 0;                //reset the dropdown
+        await LoadNemesesAsync();
+    }
+
+    private async Task RemoveNemesisAsync(int birdId)
+    {
+        await NemesisService.RemoveAsync(userId, birdId);
+        await LoadNemesesAsync();
+    }
+}
+

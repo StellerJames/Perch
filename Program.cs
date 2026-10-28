@@ -13,6 +13,7 @@ builder.Services.AddSingleton<BirdService>();
 builder.Services.AddSingleton<SightingService>();
 builder.Services.AddSingleton<UserService>();
 builder.Services.AddScoped<CurrentUser>(); //Requires Scoped vs Singleton so that not everyone has a shared account
+builder.Services.AddSingleton<NemesisService>();
 
 var app = builder.Build();
 
