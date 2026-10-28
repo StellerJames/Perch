@@ -23,6 +23,9 @@ namespace Perch.Models
         public List<BirdImage> Images { get; set; } = new();
         public List<string> Colors { get; set; } = new();
         public List<string> Habitats { get; set; } = new();
+        //Filled only by BirdService.GetLifeListAsync (Life List)
+        //how many total sightings the user has logged for this bird
+        public int TotalCount { get; set; }
 
         public string PhotoUrl => PhotoFile is null
             ? "images/icons/perchLogo.svg"

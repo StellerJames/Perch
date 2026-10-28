@@ -3,10 +3,19 @@
     <div class="bird-card-text">
         <h2>@Bird.CommonName</h2>
         <p><em>@Bird.LatinName</em></p>
+        @if (Count is not null)
+        {
+            <p>Count: @Count</p>
+        }
     </div>
 </a>
 
 @code {
     [Parameter, EditorRequired]
     public Bird Bird { get; set; } = default!;
+
+    //Optional: The life list passes the user's total count for this bird.
+    //Pages that leave it out (such as Search) won't show a count.
+    [Parameter]
+    public int? Count { get; set; }
 }

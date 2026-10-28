@@ -1,9 +1,39 @@
 ﻿@page "/life-list"
+@inject BirdService BirdService
+@inject CurrentUser CurrentUser
 
-<h3>LifeList</h3>
-
+<PageTitle>Life List</PageTitle>
 <NavBar ShowHome="true" />
+<h1>Life List</h1>
+
+@if (!CurrentUser.IsLoggedIn)
+{
+    <p>Please <a href="login">log in</a> to see your Life List.</p>
+}
+else if (birds is null)
+{
+  <p>Loading...</p>  
+}
+else if (!birds.Any())
+{
+    <p>You haven't logged any birds yet! Add your first bird on your <a href="daily-list">Daily List</a>.</p>
+}
+else
+{
+    <p>You've seen @birds.Count species.</p>
+     @foreach (var bird in birds)
+    {
+    <BirdCard Bird="bird" Count="bird.TotalCount"/>    
+    }   
+}
 
 @code {
+    private List<Bird>? birds; //null until the database responds
 
+    protected override async Task OnInitializedAsync()
+    {
+        if (CurrentUser.UserId is null) return; //user not logged in, stop here
+
+        birds = await BirdService.GetLifeListAsync(CurrentUser.UserId.Value);
+    }
 }

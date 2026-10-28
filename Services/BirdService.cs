@@ -54,6 +54,24 @@ namespace Perch.Services
             return birds.ToList();
         }
 
+        //Life List: Returns a complete list of birds that the user has logged sightings for.
+        //Includes the total number of sightings for each bird, counted across all of their Daily List sightings.
+
+        public async Task<List<Bird>> GetLifeListAsync(int userId)
+        { 
+        using var connection = new MySqlConnection(connectionString);
+            var birds = await connection.QueryAsync<Bird>("""
+                SELECT b.bird_id, b.common_name, b.latin_name, i.image_file AS photo_file, SUM(s.bird_count) AS total_count FROM sightings s
+                JOIN birds b ON b.bird_id = s.bird_id
+                LEFT JOIN images i on i.bird_id = b.bird_id AND i.is_featured = 1
+                WHERE s.user_id = @UserId
+                GROUP BY b.bird_id, b.common_name, b.latin_name, i.image_file
+                ORDER BY b.common_name
+                """,
+                new { UserId = userId });
+            return birds.ToList();
+        }
+
         //Bird Profile: one bird with all its photos, colors and habitats.
         //QueryMultiple sends the four SELECTs in one trip to the database.
         public async Task<Bird?> GetByIdAsync(int birdId)
