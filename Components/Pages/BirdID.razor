@@ -39,9 +39,30 @@ else if (step == 2)
 
     <div class="step-buttons">
         <button type="button" @onclick="() => step = 1">Back</button>
-        <button type="button" disabled="@(pickedSize is null)" @onclick="ShowResultsAsync">See matches</button>
+        <button type="button" disabled="@(pickedSize is null)" @onclick="() => step = 3">Next</button>
+    </div>
+   
+}
+else if (step == 3)
+{
+    <h2>Where Did You See It?</h2>
+    <p>Pick the closest habitat, or leave it blank if you're not sure.</p>
+
+    <div class="tile-grid">
+        @foreach (var tile in habitatTiles)
+        {
+            <ChoiceTile Label="@tile.Label" Icon="@tile.Icon"
+                        Selected="@(pickedHabitat == tile)"
+                        OnClick="() => ToggleHabitat(tile)" />
+        }
+    </div>
+
+    <div class="step-buttons">
+        <button type="button" @onclick="() => step = 2">Back</button>
+        <button type="button" @onclick="ShowResultsAsync">See matches</button>
     </div>
 }
+
 else
 {
     <h2>Most likely matches</h2>
@@ -73,6 +94,9 @@ else
 
     //Size range in inches, measured beak to tail
     private record SizeTile(string Label, string Icon, decimal MinIn, decimal MaxIn);
+    
+    //TileId mathes the tiles_id in the tiles table in the DB
+    private record HabitatTile (string Label, string Icon, int TileId);
 
     private readonly List<ColorTile> colorTiles = new()
     {
@@ -92,6 +116,18 @@ else
         new("Pigeon-sized",      "images/icons/pigeon.svg",      11m,   15m),
         new("Gull-sized",        "images/icons/gull.svg",        15m,   22m),
         new("Goose-sized",       "images/icons/goose.svg",       22m,   100m),
+
+    };
+    private HabitatTile? pickedHabitat;                 //optional: null means "not sure"
+
+    private readonly List<HabitatTile> habitatTiles = new()
+    {
+        new("Forest", "images/icons/woods.svg", 1),
+        new("Grassland", "images/icons/grass.svg", 2),
+        new("Wetland", "images/icons/reeds.svg", 3),
+        new("Backyard", "images/icons/backyard.svg", 4),
+        new("Open Water", "images/icons/lake.svg", 5),
+        new("Desert", "images/icons/desert.svg", 6)     
     };
 
     private int step = 1;
@@ -108,15 +144,21 @@ else
         }
     }
 
+    //Habitat allows one pick; clicking the picked tile again clears it
+    private void ToggleHabitat(HabitatTile tile)
+    {
+        pickedHabitat = pickedHabitat == tile ? null : tile;
+    }
+
     private async Task ShowResultsAsync()
     {
-        step = 3;
+        step = 4;
         results = null;
 
         //Turn the picked tiles into one flat list of database color names
         var colorNames = pickedColors.SelectMany(t => t.ColorNames).ToList();
 
-        results = await BirdService.IdentifyAsync(colorNames, pickedSize!.MinIn, pickedSize.MaxIn);
+        results = await BirdService.IdentifyAsync(colorNames, pickedSize!.MinIn, pickedSize.MaxIn, pickedHabitat?.TileId);
     }
 
     private void StartOver()
@@ -124,6 +166,7 @@ else
         step = 1;
         pickedColors.Clear();
         pickedSize = null;
+        pickedHabitat = null;
         results = null;
     }
 }

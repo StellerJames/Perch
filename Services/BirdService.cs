@@ -78,7 +78,7 @@ namespace Perch.Services
         //  +2 if its size range overlaps the chosen size
         //  +1 if its size is close (within 3 inches) but not an exact fit
         //Birds that match nothing (score 0) are left out.
-        public async Task<List<Bird>> IdentifyAsync(List<string> colors, decimal minIn, decimal maxIn)
+        public async Task<List<Bird>> IdentifyAsync(List<string> colors, decimal minIn, decimal maxIn, int? habitatTileId)
         {
             using var connection = new MySqlConnection(connectionString);
             var birds = await connection.QueryAsync<Bird>("""
@@ -94,6 +94,14 @@ namespace Perch.Services
                                WHEN b.size_min_in <= @MaxIn + 3 AND b.size_max_in >= @MinIn - 3 THEN 1
                                ELSE 0
                            END
+                           +
+                          COALESCE ((SELECT MAX(CASE WHEN
+                          bh.is_primary = 1 THEN 2 ELSE 1 END)
+                          FROM bird_habitats bh
+                          JOIN habitats h ON
+                          h.habitat_id = bh.habitat_id
+                          WHERE bh.bird_id = b.bird_id 
+                          AND h.tile_id = @HabitatTileId), 0)
                        ) AS match_score
                 FROM birds b
                 LEFT JOIN images i ON i.bird_id = b.bird_id AND i.is_featured = 1
@@ -101,7 +109,7 @@ namespace Perch.Services
                 ORDER BY match_score DESC, b.common_name
                 LIMIT 20
                 """,
-                new { Colors = colors, MinIn = minIn, MaxIn = maxIn });
+                new { Colors = colors, MinIn = minIn, MaxIn = maxIn, HabitatTileId = habitatTileId });
             return birds.ToList();
         }
 
