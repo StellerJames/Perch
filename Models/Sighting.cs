@@ -1,6 +1,5 @@
 ﻿namespace Perch.Models
 {
-
     //One row of the sightings table. Ex: I saw N of this bird on this day.
     //Dapper fills these by name, the same way it does for the Bird class.
     public class Sighting

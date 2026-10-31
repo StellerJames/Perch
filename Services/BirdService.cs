@@ -1,6 +1,7 @@
 using Dapper;
 using MySqlConnector;
 using Perch.Models;
+using System.Collections.Concurrent;
 
 namespace Perch.Services
 {
@@ -69,6 +70,38 @@ namespace Perch.Services
                 ORDER BY b.common_name
                 """,
                 new { UserId = userId });
+            return birds.ToList();
+        }
+
+        //Bird ID: every bird earns points for each answer it matches, and the best matches come first.
+        //  +1 for each chosen color the bird has
+        //  +2 if its size range overlaps the chosen size
+        //  +1 if its size is close (within 3 inches) but not an exact fit
+        //Birds that match nothing (score 0) are left out.
+        public async Task<List<Bird>> IdentifyAsync(List<string> colors, decimal minIn, decimal maxIn)
+        {
+            using var connection = new MySqlConnection(connectionString);
+            var birds = await connection.QueryAsync<Bird>("""
+                SELECT b.bird_id, b.common_name, b.latin_name, i.image_file AS photo_file,
+                       (
+                           (SELECT COUNT(*)
+                            FROM bird_colors bc
+                            JOIN colors c ON c.color_id = bc.color_id
+                            WHERE bc.bird_id = b.bird_id AND c.name IN @Colors)
+                           +
+                           CASE
+                               WHEN b.size_min_in <= @MaxIn AND b.size_max_in >= @MinIn THEN 2
+                               WHEN b.size_min_in <= @MaxIn + 3 AND b.size_max_in >= @MinIn - 3 THEN 1
+                               ELSE 0
+                           END
+                       ) AS match_score
+                FROM birds b
+                LEFT JOIN images i ON i.bird_id = b.bird_id AND i.is_featured = 1
+                HAVING match_score > 0
+                ORDER BY match_score DESC, b.common_name
+                LIMIT 20
+                """,
+                new { Colors = colors, MinIn = minIn, MaxIn = maxIn });
             return birds.ToList();
         }
 

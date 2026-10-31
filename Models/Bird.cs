@@ -9,6 +9,7 @@ namespace Perch.Models
         public int BirdId { get; set; }
         public string CommonName { get; set; } = "";
         public string LatinName { get; set; } = "";
+        public string? CommonPronunciation { get; set; }
         public string? LatinPronunciation { get; set; }
         public int FamilyId { get; set; }
         public decimal SizeMinIn { get; set; }
@@ -26,7 +27,9 @@ namespace Perch.Models
         //Filled only by BirdService.GetLifeListAsync (Life List)
         //how many total sightings the user has logged for this bird
         public int TotalCount { get; set; }
-
+        //BirdID results
+        //How many of the user's answers this bird matches. Higher = more likely to be the bird they saw.
+        public int MatchScore { get; set; }
         public string PhotoUrl => PhotoFile is null
             ? "images/icons/perchLogo.svg"
             : $"images/birdPhotos/{PhotoFile}";

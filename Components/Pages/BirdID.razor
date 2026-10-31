@@ -1,9 +1,129 @@
 ﻿@page "/bird-id"
+@inject BirdService BirdService
 
-<h3>BirdID</h3>
-
+<PageTitle>Bird ID</PageTitle>
 <NavBar ShowHome="true" />
+<h1>Bird ID</h1>
+
+@if (step == 1)
+{
+    <h2>What Color Was Your Bird?</h2>
+    <p>Pick every color that fits.</p>
+
+    <div class="tile-grid">
+        @foreach (var tile in colorTiles)
+        {
+            <ChoiceTile Label="@tile.Label" Icon="@tile.Icon"
+                        Selected="@pickedColors.Contains(tile)"
+                        OnClick="() => ToggleColor(tile)" />
+        }
+    </div>
+
+    <div class="step-buttons">
+        <button type="button" disabled="@(pickedColors.Count == 0)" @onclick="() => step = 2">Next</button>
+    </div>
+}
+else if (step == 2)
+{
+    <h2>How Large Was Your Bird?</h2>
+    <p>Pick the closest size.</p>
+
+    <div class="tile-grid">
+        @foreach (var tile in sizeTiles)
+        {
+            <ChoiceTile Label="@tile.Label" Icon="@tile.Icon"
+                        Selected="@(pickedSize == tile)"
+                        OnClick="() => pickedSize = tile" />
+        }
+    </div>
+
+    <div class="step-buttons">
+        <button type="button" @onclick="() => step = 1">Back</button>
+        <button type="button" disabled="@(pickedSize is null)" @onclick="ShowResultsAsync">See matches</button>
+    </div>
+}
+else
+{
+    <h2>Most likely matches</h2>
+
+    @if (results is null)
+    {
+        <p>Loading…</p>
+    }
+    else if (results.Count == 0)
+    {
+        <p>No birds matched. Try different colors or a different size.</p>
+    }
+    else
+    {
+        @foreach (var bird in results)
+        {
+            <BirdCard Bird="bird" />
+        }
+    }
+
+    <div class="step-buttons">
+        <button type="button" @onclick="StartOver">Start over</button>
+    </div>
+}
 
 @code {
+    //A tile can stand for more than one color in the database (e.g. Black / Gray)
+    private record ColorTile(string Label, string Icon, string[] ColorNames);
 
+    //Size range in inches, measured beak to tail
+    private record SizeTile(string Label, string Icon, decimal MinIn, decimal MaxIn);
+
+    private readonly List<ColorTile> colorTiles = new()
+    {
+        new("Black / Gray",   "images/icons/blackGrey.svg",    new[] { "Black", "Gray" }),
+        new("Blue / Green",   "images/icons/blueGreen.svg",    new[] { "Blue", "Green" }),
+        new("Brown / Tan",    "images/icons/brownTan.svg",     new[] { "Brown", "Tan" }),
+        new("Cream / White",  "images/icons/creamWhite.svg",   new[] { "Cream", "White" }),
+        new("Orange / Yellow","images/icons/orangeYellow.svg", new[] { "Orange", "Yellow" }),
+        new("Violet / Red",   "images/icons/violetRed.svg",    new[] { "Violet", "Red" }),
+    };
+
+    private readonly List<SizeTile> sizeTiles = new()
+    {
+        new("Hummingbird-sized", "images/icons/hummingbird.svg", 0m,    4.5m),
+        new("Sparrow-sized",     "images/icons/sparrow.svg",     4.5m,  7m),
+        new("Robin-sized",       "images/icons/robin.svg",       7m,    11m),
+        new("Pigeon-sized",      "images/icons/pigeon.svg",      11m,   15m),
+        new("Gull-sized",        "images/icons/gull.svg",        15m,   22m),
+        new("Goose-sized",       "images/icons/goose.svg",       22m,   100m),
+    };
+
+    private int step = 1;
+    private HashSet<ColorTile> pickedColors = new();   //colors allow several picks
+    private SizeTile? pickedSize;                       //size allows only one pick
+    private List<Bird>? results;                        //null while loading
+
+    //Clicking a color tile turns it on, clicking again turns it off
+    private void ToggleColor(ColorTile tile)
+    {
+        if (!pickedColors.Remove(tile))
+        {
+            pickedColors.Add(tile);
+        }
+    }
+
+    private async Task ShowResultsAsync()
+    {
+        step = 3;
+        results = null;
+
+        //Turn the picked tiles into one flat list of database color names
+        var colorNames = pickedColors.SelectMany(t => t.ColorNames).ToList();
+
+        results = await BirdService.IdentifyAsync(colorNames, pickedSize!.MinIn, pickedSize.MaxIn);
+    }
+
+    private void StartOver()
+    {
+        step = 1;
+        pickedColors.Clear();
+        pickedSize = null;
+        results = null;
+    }
 }

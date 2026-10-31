@@ -1,0 +1,21 @@
+﻿.tile-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    max-width: 420px;
+    margin: 1rem auto;
+}
+
+@media (min-width: 700px) {
+    .tile-grid {
+        grid-template-columns: repeat(3, 1fr);
+        max-width: 600px;
+    }
+}
+
+.step-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1rem 0;
+}

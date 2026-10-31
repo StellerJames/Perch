@@ -1,0 +1,25 @@
+﻿<button type="button"
+    class="choice-tile @(Selected ? "selected" : "")"
+    aria-pressed="@(Selected ? "true" : "false")"
+    @onclick="OnClick">
+<img src="@Icon" alt="" />
+<span> @Label</span>
+</button>
+
+@code {
+    //The words under each picture ex: "Robin-sized"
+    [Parameter, EditorRequired]
+    public string Label { get; set; } = "";
+
+    //The path to the image file ex: "images/icons/robin.svg"
+    [Parameter, EditorRequired]
+    public string Icon { get; set; } = "";
+
+    //The page tells the tiles which one is selected
+    [Parameter]
+    public bool Selected { get; set; }
+
+    //The page decides what happens when the tile is clicked
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+}

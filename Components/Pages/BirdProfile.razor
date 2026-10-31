@@ -1,5 +1,6 @@
 @page "/bird/{Id:int}"
 @inject BirdService BirdService
+@inject IJSRuntime JS
 
 <NavBar />
 
@@ -41,11 +42,30 @@ else
     }
 
     <h1>@bird.CommonName</h1>
+    <div class="say-it">
+        @if (bird.CommonPronunciation is not null)
+        {
+            <p class="pronunciation">@bird.CommonPronunciation</p>
+        }
+        <button type="button" class="listen-button"
+                aria-label="Hear how to say @bird.CommonName"
+                @onclick="() => SpeakAsync(bird.CommonName)">
+            <img src="images/icons/listenIcon.svg" alt="" />
+        </button>
+    </div>
+
     <p><em>@bird.LatinName</em></p>
-    @if (bird.LatinPronunciation is not null)
-    {
-        <p class="pronunciation">@bird.LatinPronunciation</p>
-    }
+    <div class="say-it">
+        @if (bird.LatinPronunciation is not null)
+        {
+            <p class="pronunciation">@bird.LatinPronunciation</p>
+        }
+        <button type="button" class="listen-button"
+                aria-label="Hear how to say @bird.LatinName"
+                @onclick="() => SpeakAsync(bird.LatinName)">
+            <img src="images/icons/listenIcon.svg" alt="" />
+        </button>
+    </div>
 
     @if (bird.Description is not null)
     {
@@ -78,5 +98,11 @@ else
         bird = await BirdService.GetByIdAsync(Id);
         featured = bird?.Images.FirstOrDefault(i => i.IsFeatured);
         loading = false;
+    }
+
+    //Speaker button: the browser reads the name out loud (speakText lives in App.razor)
+    private async Task SpeakAsync(string text)
+    {
+        await JS.InvokeVoidAsync("speakText", text);
     }
 }
