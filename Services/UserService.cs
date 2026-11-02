@@ -50,10 +50,10 @@ namespace Perch.Services
             //1. Look up the user by username.
             using var connection = new MySqlConnection(connectionString);
             var user = await connection.QuerySingleOrDefaultAsync<User>("""
-        SELECT user_id, username, email, password_hash
-        FROM users
-        WHERE username = @Username
-        """,
+                SELECT user_id, username, email, password_hash
+                FROM users
+                WHERE username = @Username
+                """,
                 new { Username = username });
 
             //2. No account with that username.

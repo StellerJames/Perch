@@ -1,5 +1,5 @@
 ﻿<button type="button"
-    class="choice-tile @(Selected ? "selected" : "")"
+        class="choice-tile @(Plain ? "plain" : "") @(Selected ? "selected" : "")"
     aria-pressed="@(Selected ? "true" : "false")"
     @onclick="OnClick">
 <img src="@Icon" alt="" />
@@ -22,4 +22,8 @@
     //The page decides what happens when the tile is clicked
     [Parameter]
     public EventCallback OnClick { get; set; }
+
+    //Plain tiles have no cream background (used on the color page so white stays visible)
+    [Parameter]
+    public bool Plain { get; set; }
 }

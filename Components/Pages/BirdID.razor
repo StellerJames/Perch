@@ -1,5 +1,7 @@
 ﻿@page "/bird-id"
 @inject BirdService BirdService
+@implements IDisposable
+@inject NavigationManager Navigation
 
 <PageTitle>Bird ID</PageTitle>
 <NavBar ShowHome="true" />
@@ -14,6 +16,7 @@
         @foreach (var tile in colorTiles)
         {
             <ChoiceTile Label="@tile.Label" Icon="@tile.Icon"
+            Plain ="true"
                         Selected="@pickedColors.Contains(tile)"
                         OnClick="() => ToggleColor(tile)" />
         }
@@ -40,8 +43,7 @@ else if (step == 2)
     <div class="step-buttons">
         <button type="button" @onclick="() => step = 1">Back</button>
         <button type="button" disabled="@(pickedSize is null)" @onclick="() => step = 3">Next</button>
-    </div>
-   
+    </div>   
 }
 else if (step == 3)
 {
@@ -59,10 +61,66 @@ else if (step == 3)
 
     <div class="step-buttons">
         <button type="button" @onclick="() => step = 2">Back</button>
+        <button type="button" @onclick="() => step = 4">Next</button>
+    </div>
+}
+else if (step == 4)
+{
+    <h2>In Which Region Was Your Bird Located?</h2>
+    <p>Tap a region, or leave it blank if you're not sure.</p>
+
+    <div class="region-map">
+        <img src="images/icons/mapNoOutline.svg" alt="" class="map-base" />
+
+        @foreach (var tile in regionTiles)
+        {
+            <img src="@tile.Highlight" alt="" class="map-overlay region-highlight @(IsLit(tile) ? "lit" : "")" />
+        }
+
+        <img src="images/icons/lakeAndOutline.svg" alt="" class="map-overlay" />
+
+        @foreach (var tile in regionTiles)
+        {
+            <button type="button"
+                    class="region-button @(pickedRegion == tile ? "selected" : "")"
+                    style="left: @tile.Left; top: @tile.Top;"
+                    aria-pressed="@(pickedRegion == tile ? "true" : "false")"
+                    @onclick="() => ToggleRegion(tile)"
+                    @onmouseenter="() => hoveredRegion = tile"
+                    @onmouseleave="() => hoveredRegion = null"
+                    @onfocus="() => hoveredRegion = tile"
+                    @onblur="() => hoveredRegion = null">
+                @tile.Label Region
+            </button>
+        }
+    </div>
+
+    <p class="map-credit">Utah Division of Wildlife Resources' Regional Boundaries Map</p>
+
+    <div class="step-buttons">
+        <button type="button" @onclick="() => step = 3">Back</button>
+        <button type="button" @onclick="() => step = 5">Next</button>
+    </div>
+}
+else if (step == 5)
+{
+    <h2>What Time of Year Was It?</h2>
+    <p>Pick a season, or leave it blank if you're not sure.</p>
+
+    <div class="tile-grid">
+        @foreach (var tile in seasonTiles)
+        {
+            <ChoiceTile Label="@tile.Label" Icon="@tile.Icon"
+                        Selected="@(pickedSeason == tile)"
+                        OnClick="() => ToggleSeason(tile)" />
+        }
+    </div>
+
+    <div class="step-buttons">
+        <button type="button" @onclick="() => step = 4">Back</button>
         <button type="button" @onclick="ShowResultsAsync">See matches</button>
     </div>
 }
-
 else
 {
     <h2>Most likely matches</h2>
@@ -94,9 +152,16 @@ else
 
     //Size range in inches, measured beak to tail
     private record SizeTile(string Label, string Icon, decimal MinIn, decimal MaxIn);
-    
-    //TileId mathes the tiles_id in the tiles table in the DB
+
+    //TileId matches the tile_id in the tiles table in the DB
     private record HabitatTile (string Label, string Icon, int TileId);
+
+    //RegionId matches region_id in the regions table in the DB
+    //Highlight is that region's map layer; left/top place its button on the map.
+    private record RegionTile(string Label, int RegionId, string Highlight, string Left, string Top);
+
+    //SeasonId matches season_id in the seasons table in the DB
+    private record SeasonTile(string Label, string Icon, int SeasonId);
 
     private readonly List<ColorTile> colorTiles = new()
     {
@@ -118,21 +183,41 @@ else
         new("Goose-sized",       "images/icons/goose.svg",       22m,   100m),
 
     };
-    private HabitatTile? pickedHabitat;                 //optional: null means "not sure"
 
     private readonly List<HabitatTile> habitatTiles = new()
     {
-        new("Forest", "images/icons/woods.svg", 1),
-        new("Grassland", "images/icons/grass.svg", 2),
-        new("Wetland", "images/icons/reeds.svg", 3),
-        new("Backyard", "images/icons/backyard.svg", 4),
-        new("Open Water", "images/icons/lake.svg", 5),
-        new("Desert", "images/icons/desert.svg", 6)     
+        new("Woodlands", "images/icons/woodlandsButton.svg", 1),
+        new("Grasslands", "images/icons/grasslandsButton.svg", 2),
+        new("Wetlands", "images/icons/wetlandsButton.svg", 3),
+        new("Backyard", "images/icons/backyardButton.svg", 4),
+        new("Open Water", "images/icons/openWaterButton.svg", 5),
+        new("Desert", "images/icons/desertButton.svg", 6)     
+    };
+
+    private readonly List<RegionTile> regionTiles = new()
+    {
+        new("Northern",     1, "images/icons/northernNoOutline.svg",     "30%", "10%"),
+        new("Northeastern", 2, "images/icons/northeasternNoOutline.svg", "79%", "35%"),
+        new("Central",      3, "images/icons/centralNoOutline.svg",      "30%", "35%"),
+        new("Southeastern", 4, "images/icons/southeasternNoOutline.svg", "79%", "80%"),
+        new("Southern",     5, "images/icons/southernNoOutline.svg",     "30%", "89%"),
+    };
+
+    private readonly List<SeasonTile> seasonTiles = new()
+    {
+        new("Spring", "images/icons/springButton.svg",    2),
+        new("Summer", "images/icons/summerButton.svg",    3),
+        new("Autumn",   "images/icons/autumnButton.svg",  4),
+        new("Winter", "images/icons/winterButton.svg",    1),
     };
 
     private int step = 1;
     private HashSet<ColorTile> pickedColors = new();   //colors allow several picks
     private SizeTile? pickedSize;                       //size allows only one pick
+    private HabitatTile? pickedHabitat;                 //optional: null means "not sure"
+    private RegionTile? pickedRegion;                   //optional: null means "not sure"
+    private RegionTile? hoveredRegion;                   //the region button the mouse is over
+    private SeasonTile? pickedSeason;                   //optional: null means "not sure"
     private List<Bird>? results;                        //null while loading
 
     //Clicking a color tile turns it on, clicking again turns it off
@@ -150,15 +235,29 @@ else
         pickedHabitat = pickedHabitat == tile ? null : tile;
     }
 
+    private void ToggleRegion(RegionTile tile)
+    {
+        pickedRegion = pickedRegion == tile ? null : tile;
+    }
+
+    //A region lights up when it's picked or when the mouse is over its button
+    private bool IsLit(RegionTile tile) => tile == pickedRegion || tile == hoveredRegion;
+
+    private void ToggleSeason(SeasonTile tile)
+    {
+        pickedSeason = pickedSeason == tile ? null : tile;
+    }
+
     private async Task ShowResultsAsync()
     {
-        step = 4;
+        step = 6;
         results = null;
 
         //Turn the picked tiles into one flat list of database color names
         var colorNames = pickedColors.SelectMany(t => t.ColorNames).ToList();
 
-        results = await BirdService.IdentifyAsync(colorNames, pickedSize!.MinIn, pickedSize.MaxIn, pickedHabitat?.TileId);
+        results = await BirdService.IdentifyAsync(colorNames, pickedSize!.MinIn, pickedSize.MaxIn,
+                                          pickedHabitat?.TileId, pickedRegion?.RegionId, pickedSeason?.SeasonId);
     }
 
     private void StartOver()
@@ -167,6 +266,26 @@ else
         pickedColors.Clear();
         pickedSize = null;
         pickedHabitat = null;
+        pickedRegion = null;
+        pickedSeason = null;
         results = null;
+    }
+
+    protected override void OnInitialized()
+    {
+        Navigation.LocationChanged += OnLocationChanged;
+    }
+
+    //Clicking the Bird ID link while already on this page starts over
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        StartOver();
+        InvokeAsync(StateHasChanged);
+    }
+
+    //Stop listening when the user leaves the page
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= OnLocationChanged;
     }
 }

@@ -19,3 +19,70 @@
     gap: 1rem;
     margin: 1rem 0;
 }
+
+/* Region Map Styles */
+/* layers stacked on top of each other, all same size */
+.region-map {
+    position: relative;    /* the layers and buttons are placed inside this box*/
+    max-width: 420px; 
+    margin: 1rem auto; 
+}
+
+.map-base {
+display: block;
+width: 100%;
+height: auto;
+}
+
+.map-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    pointer-events: none; /*clicks pass through the buttons*/
+}
+
+/*Highlights are hidden until their region is hovered or picked*/
+.region-highlight {
+    opacity: 0;
+    transition: opacity 0.2s, filter 0.2s;
+}
+
+    .region-highlight.lit {
+    opacity: 1;
+    filter: drop-shadow(0 0 10px var(--cream))
+    brightness(1.08);
+    }
+
+.region-button {
+    position: absolute;
+    transform: translate(-50%, -50%); /*center the button on its left/top coordinates*/
+    max-width: 45%;
+    padding: 0.3em 0.8em;
+    background: var(--cream);
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-size: clamp(0.8rem, 3.5vw, 1.1rem);
+    font-weight: 600;
+    line-height: 1.1;
+    border: 3px solid transparent;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+    cursor: pointer;
+}
+
+    .region-button.selected {
+        border-color: var(--rust);
+    }
+
+    .region-button:focus-visible {
+        outline: 3px solid var(--cream);
+        outline-offset: 3px;
+    }
+
+.map-credit {
+    text-align: center;
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+}

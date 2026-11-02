@@ -21,14 +21,13 @@ namespace Perch.Services
         {
             using var connection = new MySqlConnection(connectionString);
             var birds = await connection.QueryAsync<Bird>("""
-                Select b.bird_id, b.common_name, b.latin_name, i.image_file 
-                AS photo_file
+                SELECT b.bird_id, b.common_name, b.latin_name, i.image_file AS photo_file
                 FROM nemesis_birds n
                 JOIN birds b ON b.bird_id = n.bird_id
                 LEFT JOIN images i ON i.bird_id = b.bird_id AND i.is_featured = 1
                 WHERE n.user_id = @UserId
-                AND NOT EXISTS (SELECT 1 FROM sightings s WHERE s.user_id = n.user_id AND s.bird_id = n.bird_id)
-                ORDER BY b.common_name                
+                  AND NOT EXISTS (SELECT 1 FROM sightings s WHERE s.user_id = n.user_id AND s.bird_id = n.bird_id)
+                ORDER BY b.common_name
                 """,
                 new { UserId = userId });
             return birds.ToList();

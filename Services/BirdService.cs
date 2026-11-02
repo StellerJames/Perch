@@ -62,9 +62,11 @@ namespace Perch.Services
         { 
         using var connection = new MySqlConnection(connectionString);
             var birds = await connection.QueryAsync<Bird>("""
-                SELECT b.bird_id, b.common_name, b.latin_name, i.image_file AS photo_file, SUM(s.bird_count) AS total_count FROM sightings s
+                SELECT b.bird_id, b.common_name, b.latin_name, i.image_file AS photo_file,
+                       SUM(s.bird_count) AS total_count
+                FROM sightings s
                 JOIN birds b ON b.bird_id = s.bird_id
-                LEFT JOIN images i on i.bird_id = b.bird_id AND i.is_featured = 1
+                LEFT JOIN images i ON i.bird_id = b.bird_id AND i.is_featured = 1
                 WHERE s.user_id = @UserId
                 GROUP BY b.bird_id, b.common_name, b.latin_name, i.image_file
                 ORDER BY b.common_name
@@ -77,8 +79,10 @@ namespace Perch.Services
         //  +1 for each chosen color the bird has
         //  +2 if its size range overlaps the chosen size
         //  +1 if its size is close (within 3 inches) but not an exact fit
+        //  +2 if the chosen habitat is the bird's primary habitat, +1 if it's one of its other habitats
+        //  +1 if the bird is found in the chosen region during the chosen season (either can be skipped)
         //Birds that match nothing (score 0) are left out.
-        public async Task<List<Bird>> IdentifyAsync(List<string> colors, decimal minIn, decimal maxIn, int? habitatTileId)
+        public async Task<List<Bird>> IdentifyAsync(List<string> colors, decimal minIn, decimal maxIn, int? habitatTileId, int? regionId, int? seasonId)
         {
             using var connection = new MySqlConnection(connectionString);
             var birds = await connection.QueryAsync<Bird>("""
@@ -95,13 +99,21 @@ namespace Perch.Services
                                ELSE 0
                            END
                            +
-                          COALESCE ((SELECT MAX(CASE WHEN
-                          bh.is_primary = 1 THEN 2 ELSE 1 END)
-                          FROM bird_habitats bh
-                          JOIN habitats h ON
-                          h.habitat_id = bh.habitat_id
-                          WHERE bh.bird_id = b.bird_id 
-                          AND h.tile_id = @HabitatTileId), 0)
+                           COALESCE((SELECT MAX(CASE WHEN bh.is_primary = 1 THEN 2 ELSE 1 END)
+                                     FROM bird_habitats bh
+                                     JOIN habitats h ON h.habitat_id = bh.habitat_id
+                                     WHERE bh.bird_id = b.bird_id AND h.tile_id = @HabitatTileId), 0)
+                           +
+                           CASE
+                               WHEN @RegionId IS NULL AND @SeasonId IS NULL THEN 0
+                               WHEN EXISTS (SELECT 1
+                                            FROM bird_presence bp
+                                            WHERE bp.bird_id = b.bird_id
+                                              AND (@RegionId IS NULL OR bp.region_id = @RegionId)
+                                              AND (@SeasonId IS NULL OR bp.season_id = @SeasonId))
+                               THEN 1
+                               ELSE 0
+                           END
                        ) AS match_score
                 FROM birds b
                 LEFT JOIN images i ON i.bird_id = b.bird_id AND i.is_featured = 1
@@ -109,7 +121,7 @@ namespace Perch.Services
                 ORDER BY match_score DESC, b.common_name
                 LIMIT 20
                 """,
-                new { Colors = colors, MinIn = minIn, MaxIn = maxIn, HabitatTileId = habitatTileId });
+                new { Colors = colors, MinIn = minIn, MaxIn = maxIn, HabitatTileId = habitatTileId, RegionId = regionId, SeasonId = seasonId });
             return birds.ToList();
         }
 
