@@ -4,7 +4,7 @@
     gap: 1rem;
     width: min(100% - 32px, 37dvh);
     max-width: 420px;
-    margin: 8px auto;
+    margin: auto;
 }
 
 @media (min-width: 700px) {
@@ -17,6 +17,8 @@
 .step-buttons {
     position: sticky;
     bottom: 0;
+    margin-top: auto; /*takes a share of the spare space above the buttons*/
+    margin-bottom: auto; /*and below, which lifts them off the bottom edge*/
     display: flex;
     justify-content: center;
     gap: 1rem;
@@ -30,7 +32,7 @@
     position: relative; /* the layers and buttons are placed inside this box*/
     width: min(100% - 32px, 41dvh);
     max-width: 420px;
-    margin: 8px auto;
+    margin: auto;
 }
 
 .map-base {

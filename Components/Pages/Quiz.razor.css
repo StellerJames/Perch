@@ -5,7 +5,7 @@
     max-width: 400px; /*never grows past this on bigger screens*/
     aspect-ratio: 1; /*keeps photo square*/
     object-fit: cover; /*crops image rather than stretches*/
-    margin: 0 auto 8px; /*centered, with breathing space below*/
+    margin: 0 auto 8px; /*space above, centered, space below*/
     border-radius: 8px;
     box-shadow: 4px 6px 6px rgba(0, 0, 0, 0.35);
     /*matches the bird cards*/
@@ -68,10 +68,10 @@
 }
 
     .quiz-credit a {
-    color: var(--cream);
+        color: var(--cream);
     }
 
-    /*After answering, the buttons lock in user's choice*/
+/*After answering, the buttons lock in user's choice*/
 .quiz-choice:disabled {
     cursor: default;
     filter: none; /*removes hover effect*/
@@ -92,6 +92,8 @@
 .quiz-feedback {
     position: sticky;
     bottom: 0; /*sticks to the bottom edge of the screen*/
+    margin-top: auto; /*takes a share of the spare space above the feedback*/
+    margin-bottom: auto; /*and below, which lifts it off the bottom edge*/
     padding: 8px 16px;
     background: var(--teal); /*so answers don't show through behind it*/
     text-align: center;
@@ -113,6 +115,48 @@
         cursor: pointer;
     }
 
-        .quiz-feedback button:hover {
-            filter: brightness(1.15);
-        }
+    .quiz-feedback button:hover {
+        filter: brightness(1.15);
+    }
+
+/*Which question the user is on. Fills the space above the photo so
+  the photo starts at the same height as on the bird's page*/
+.quiz-progress {
+    display: flex;
+    align-items: center; /*centers the text top to bottom*/
+    justify-content: center; /*centers the text left to right*/
+    height: var(--photo-top-space);
+    margin: 0 16px;
+    font-size: 0.95rem;
+}
+
+/*Final score screen*/
+.quiz-results {
+    margin: 48px 16px;
+    text-align: center;
+}
+
+    .quiz-results h2 {
+        margin: 0 0 8px;
+        font-size: 2.2rem;
+    }
+
+    .quiz-results p {
+        margin: 0 0 24px;
+        font-size: 1.2rem;
+    }
+
+    .quiz-results button {
+        background: var(--rust);
+        color: var(--cream);
+        border: none;
+        border-radius: 6px;
+        padding: 8px 24px;
+        font-family: var(--font-body);
+        font-size: 1rem;
+        cursor: pointer;
+    }
+
+    .quiz-results button:hover {
+        filter: brightness(1.15);
+    }

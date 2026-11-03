@@ -8,6 +8,8 @@
 
     --font-display: 'Cormorant SC', Georgia, serif; /*headings*/
     --font-body: 'Inter', system-ui, sans-serif; /*body text*/
+
+    --photo-top-space: 40px; /*gap between the nav bar and a page's main bird photo*/
 }
 
 /*Includes padding and border in width-height.*/

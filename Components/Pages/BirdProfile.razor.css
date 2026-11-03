@@ -11,7 +11,31 @@
     cursor: pointer;
 }
 
-.listen-button img {
-    width: 28px;
-    height: 28px;
+    .listen-button img {
+        width: 28px;
+        height: 28px;
+    }
+
+/*Main bird photo: same look as the quiz photo*/
+.bird-photo {
+    display: block;
+    width: 72%; /*leaves breathing room on both sides*/
+    max-width: 400px; /*never grows past this on bigger screens*/
+    aspect-ratio: 1; /*keeps photo square*/
+    object-fit: cover; /*crops image rather than stretches*/
+    margin: var(--photo-top-space) auto 8px; /*space above, centered, space below*/
+    border-radius: 8px;
+    box-shadow: 4px 6px 6px rgba(0, 0, 0, 0.35);
+}
+
+.photo-credit {
+    width: 72%;
+    max-width: 400px;
+    margin: 0 auto 16px;
+    font-size: 0.7rem;
+    text-align: center;
+}
+
+.photo-credit a {
+    color: var(--cream); /*matches the rest of the credit; the underline marks the links*/
 }

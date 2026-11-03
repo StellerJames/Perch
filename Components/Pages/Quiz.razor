@@ -3,11 +3,19 @@
 
 <PageTitle>Bird Quiz</PageTitle>
 <NavBar ShowHome="true" />
-<br />
+<p class="quiz-progress">Question @questionNumber of @roundBirds.Count</p>
 
 @if (currentBird is null)
 {
     <p>Loading...</p>
+}
+else if (roundFinished)
+{
+    <div class="quiz-results">
+        <h2>Round Complete!</h2>
+        <p role="status">You got @score out of @roundBirds.Count correct.</p>
+        <button type="button" @onclick="StartRoundAsync">Play again</button>
+    </div>
 }
 else
 {
@@ -49,7 +57,7 @@ else
                 @(pickedBird.BirdId == currentBird.BirdId ? "Correct!" : "Not quite.")
                 This is the @currentBird.CommonName.
             </p>
-            <button type="button" @onclick="NextQuestionAsync">Next bird</button>
+            <button type="button" @onclick="NextQuestionAsync">@(questionNumber < roundBirds.Count ? "Next bird" : "See my score")</button>
         </div>
     }
 }
@@ -66,6 +74,18 @@ else
     //the answer the user picked for the current quiz question
     private BirdImage? photoCredit;
     //who took the photo of the current bird
+    private const int QuestionsPerRound = 10;
+    //how many birds are in one round
+    private List<Bird> roundBirds = new();
+    //the birds chosen for this round
+    private int questionNumber;
+    //which question the user is on
+    private int score;
+    //how many they've gotten right
+    private bool roundFinished;
+    //true once it's time to show the final score
+    private bool loadingQuestion;
+    //true while the next question is loading
 
 
     protected override async Task OnInitializedAsync()
@@ -75,13 +95,36 @@ else
         if (!RendererInfo.IsInteractive) return;
 
         allBirds = await BirdService.GetAllAsync();
+        await StartRoundAsync();
+    }
+
+    //Picks this round's birds and resets everything from the last round
+    private async Task StartRoundAsync()
+    {
+        roundBirds = allBirds.OrderBy(b => random.Next()).Take(QuestionsPerRound).ToList();
+        questionNumber = 0;
+        score = 0;
+        roundFinished = false;
+        currentBird = null; //shows "Loading..." until the first question is ready
         await NextQuestionAsync();
     }
 
     private async Task NextQuestionAsync()
     {
-        //Pick the correct answer
-        var answer = allBirds[random.Next(allBirds.Count)];
+        //Ignore extra clicks while the next question is still loading
+        if (loadingQuestion) return;
+
+        //If that was the last bird, show the final score instead
+        if (questionNumber == roundBirds.Count)
+        {
+            roundFinished = true;
+            return;
+        }
+
+        loadingQuestion = true;
+
+        //Take the next bird from this round's list
+        var answer = roundBirds[questionNumber];
 
         //Load this bird's photo credit information before changing anything on the screen
         var details = await BirdService.GetByIdAsync(answer.BirdId);
@@ -101,12 +144,19 @@ else
         photoCredit = details?.Images.FirstOrDefault(i => i.IsFeatured);
         pickedBird = null; //clears last answer
         currentBird = answer;
+        questionNumber++;           //moves on to the next question
+        loadingQuestion = false;    //ready for the next click
+
+
     }
 
-    //Remembers which answer the user picked
+    //Remembers which answer the user picked and adds to the score if it's right
     private void PickAnswer(Bird choice)
     {
+        if (pickedBird is not null) return; //already answered, so ignore extra clicks
+
         pickedBird = choice;
+        if (choice.BirdId == currentBird!.BirdId) score++;
     }
 
     //Decides which color a button should be based on answer being true, false, or not clicked on
