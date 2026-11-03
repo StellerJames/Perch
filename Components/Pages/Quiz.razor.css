@@ -1,0 +1,118 @@
+﻿/*Styles photo of the mystery bird*/
+.quiz-photo {
+    display: block;
+    width: min(72%, 32dvh); /*72% of the viewport width, unless that's too tall, then it's 32dvh*/
+    max-width: 400px; /*never grows past this on bigger screens*/
+    aspect-ratio: 1; /*keeps photo square*/
+    object-fit: cover; /*crops image rather than stretches*/
+    margin: 0 auto 8px; /*centered, with breathing space below*/
+    border-radius: 8px;
+    box-shadow: 4px 6px 6px rgba(0, 0, 0, 0.35);
+    /*matches the bird cards*/
+}
+
+/*Stack the Answers*/
+.quiz-choices {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(8px, 2dvh, 36px); /*more space on taller screens*/
+    width: 72%;
+    max-width: 400px;
+    margin: 0 auto 2dvh;
+}
+
+/*Style answer buttons*/
+/*One answer button*/
+.quiz-choice {
+    display: flex;
+    flex-direction: column; /*Latin name goes under the common name*/
+    align-items: center;
+    width: 100%;
+    padding: 8px;
+    background: var(--cream);
+    color: var(--ink);
+    border: none;
+    border-radius: 8px;
+    box-shadow: 4px 6px 6px rgba(0, 0, 0, 0.35);
+    cursor: pointer; /*shows the hand pointer on hover*/
+}
+
+    .quiz-choice:hover {
+        filter: brightness(0.93); /*slightly darker when hovered*/
+    }
+
+    .quiz-choice:focus-visible {
+        outline: 3px solid var(--cream);
+        outline-offset: 3px;
+    }
+
+    .quiz-choice strong {
+        font-family: var(--font-display);
+        font-size: 1.4rem;
+        font-weight: 500;
+        line-height: 1.1;
+    }
+
+    .quiz-choice em {
+        font-family: var(--font-body);
+        font-size: 0.95rem;
+    }
+
+/*Photo Credit*/
+.quiz-credit {
+    width: 72%;
+    max-width: 400px;
+    margin: 0 auto 2dvh;
+    font-size: 0.7rem;
+    text-align: center;
+}
+
+    .quiz-credit a {
+    color: var(--cream);
+    }
+
+    /*After answering, the buttons lock in user's choice*/
+.quiz-choice:disabled {
+    cursor: default;
+    filter: none; /*removes hover effect*/
+}
+
+/*Correct = green, Incorrect = rust*/
+.quiz-choice.correct {
+    background: #2E7D4F;
+    color: var(--cream);
+}
+
+.quiz-choice.incorrect {
+    background: var(--rust);
+    color: var(--cream);
+}
+
+/*Message to user and Next Button*/
+.quiz-feedback {
+    position: sticky;
+    bottom: 0; /*sticks to the bottom edge of the screen*/
+    padding: 8px 16px;
+    background: var(--teal); /*so answers don't show through behind it*/
+    text-align: center;
+}
+
+    .quiz-feedback p {
+        margin: 0 0 8px;
+        font-size: 1rem;
+    }
+
+    .quiz-feedback button {
+        background: var(--rust);
+        color: var(--cream);
+        border: none;
+        border-radius: 6px;
+        padding: 8px 24px;
+        font-family: var(--font-body);
+        font-size: 1rem;
+        cursor: pointer;
+    }
+
+        .quiz-feedback button:hover {
+            filter: brightness(1.15);
+        }

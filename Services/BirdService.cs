@@ -21,7 +21,7 @@ namespace Perch.Services
 
         //Every bird query starts here: the bird, its family name, and its featured photo.
         private const string BirdSelect = """
-            SELECT b.bird_id, b.common_name, b.latin_name, b.latin_pronunciation,
+            SELECT b.bird_id, b.common_name, b.common_pronunciation, b.latin_name, b.latin_pronunciation,
                    b.family_id, b.size_min_in, b.size_max_in, b.description,
                    f.name AS family_name,
                    i.image_file AS photo_file

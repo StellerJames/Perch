@@ -172,10 +172,3 @@ h1 {
         margin: 0;
     }
 
-/*Bird Quiz*/
-/*.quiz-photo {
-    width: 100%;*/ /* fill the phone's width */
-    /*max-width: 400px;*/ /* but never grow past this on bigger screens */
-    /*aspect-ratio: 1;*/ /* keep it square */
-    /*object-fit: cover;*/ /* crop instead of stretching */
-/*}*/

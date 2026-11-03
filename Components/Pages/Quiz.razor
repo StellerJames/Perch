@@ -1,9 +1,121 @@
 ﻿@page "/quiz"
+@inject BirdService BirdService
 
-<h3>BirdQuiz</h3>
-
+<PageTitle>Bird Quiz</PageTitle>
 <NavBar ShowHome="true" />
+<br />
 
+@if (currentBird is null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <img src="@currentBird.PhotoUrl" alt="Photo of the mystery bird" class="quiz-photo" />
+
+    @if (photoCredit is not null)
+    {
+        <p class="quiz-credit">
+            Photo: @photoCredit.Author,
+            @if (photoCredit.LicenseUrl is not null)
+            {
+                <a href="@photoCredit.LicenseUrl" target="_blank" rel="noopener">@photoCredit.LicenseName</a>
+            }
+            else
+            {
+                @photoCredit.LicenseName
+            }
+            via @photoCredit.Source
+        </p>
+    }
+
+    <div class="quiz-choices">
+        @foreach (var choice in birdChoices)
+        {
+            <button type="button"
+                    class="quiz-choice @ChoiceClass(choice)"
+                    disabled="@(pickedBird is not null)"
+                    @onclick="() => PickAnswer(choice)">
+                <strong>@choice.CommonName</strong>
+                <em>@choice.LatinName</em>
+            </button>
+        }
+    </div>
+
+    @if (pickedBird is not null)
+    {
+        <div class="quiz-feedback">
+            <p role="status">
+                @(pickedBird.BirdId == currentBird.BirdId ? "Correct!" : "Not quite.")
+                This is the @currentBird.CommonName.
+            </p>
+            <button type="button" @onclick="NextQuestionAsync">Next bird</button>
+        </div>
+    }
+}
 @code {
+    private readonly Random random = new();
+    //System.Random: picks a random bird from the DB
+    private List<Bird> allBirds = new();
+    //every bird in the DB
+    private Bird? currentBird;
+    //correct answer for the current question
+    private List<Bird> birdChoices = new();
+    //the four choices for the current question
+    private Bird? pickedBird;
+    //the answer the user picked for the current quiz question
+    private BirdImage? photoCredit;
+    //who took the photo of the current bird
 
+
+    protected override async Task OnInitializedAsync()
+    {
+        //Blazor draws the page twice: once before it becomes interractive, and once after.
+        //Waiting for the second draw keeps the photo from swapping out for a second while the page loads.
+        if (!RendererInfo.IsInteractive) return;
+
+        allBirds = await BirdService.GetAllAsync();
+        await NextQuestionAsync();
+    }
+
+    private async Task NextQuestionAsync()
+    {
+        //Pick the correct answer
+        var answer = allBirds[random.Next(allBirds.Count)];
+
+        //Load this bird's photo credit information before changing anything on the screen
+        var details = await BirdService.GetByIdAsync(answer.BirdId);
+
+        //Pick three random birds to be the wrong answers
+        var wrongAnswers = allBirds
+        .Where(b => b.BirdId != answer.BirdId)
+        .OrderBy(b => random.Next())
+        .Take(3);
+
+        //Mix the correct and incorrect answers together
+        birdChoices = wrongAnswers
+        .Append(answer)
+        .OrderBy(b => random.Next())
+        .ToList();
+
+        photoCredit = details?.Images.FirstOrDefault(i => i.IsFeatured);
+        pickedBird = null; //clears last answer
+        currentBird = answer;
+    }
+
+    //Remembers which answer the user picked
+    private void PickAnswer(Bird choice)
+    {
+        pickedBird = choice;
+    }
+
+    //Decides which color a button should be based on answer being true, false, or not clicked on
+
+    private string ChoiceClass(Bird choice)
+    {
+        if (pickedBird is null) return ""; //no answer picked yet, so no color
+        if (choice.BirdId == currentBird!.BirdId) return "correct"; 
+        if (choice.BirdId == pickedBird.BirdId) return "incorrect";
+        return "";
+    }
 }

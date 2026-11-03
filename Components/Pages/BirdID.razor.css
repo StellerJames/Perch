@@ -2,8 +2,9 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
+    width: min(100% - 32px, 37dvh);
     max-width: 420px;
-    margin: 1rem auto;
+    margin: 8px auto;
 }
 
 @media (min-width: 700px) {
@@ -14,18 +15,22 @@
 }
 
 .step-buttons {
+    position: sticky;
+    bottom: 0;
     display: flex;
     justify-content: center;
     gap: 1rem;
-    margin: 1rem 0;
+    padding: 8px 16px;
+    background: var(--teal);
 }
 
 /* Region Map Styles */
 /* layers stacked on top of each other, all same size */
 .region-map {
-    position: relative;    /* the layers and buttons are placed inside this box*/
-    max-width: 420px; 
-    margin: 1rem auto; 
+    position: relative; /* the layers and buttons are placed inside this box*/
+    width: min(100% - 32px, 41dvh);
+    max-width: 420px;
+    margin: 8px auto;
 }
 
 .map-base {
@@ -85,4 +90,10 @@ height: auto;
     text-align: center;
     font-family: var(--font-display);
     font-size: 0.9rem;
+}
+
+/*Keeps headings and instructions off the screen edges*/
+h2, p {
+    margin: 8px 16px;
+    text-align: center;
 }
