@@ -104,21 +104,6 @@
         font-size: 1rem;
     }
 
-    .quiz-feedback button {
-        background: var(--rust);
-        color: var(--cream);
-        border: none;
-        border-radius: 6px;
-        padding: 8px 24px;
-        font-family: var(--font-body);
-        font-size: 1rem;
-        cursor: pointer;
-    }
-
-    .quiz-feedback button:hover {
-        filter: brightness(1.15);
-    }
-
 /*Which question the user is on. Fills the space above the photo so
   the photo starts at the same height as on the bird's page*/
 .quiz-progress {
@@ -144,19 +129,4 @@
     .quiz-results p {
         margin: 0 0 24px;
         font-size: 1.2rem;
-    }
-
-    .quiz-results button {
-        background: var(--rust);
-        color: var(--cream);
-        border: none;
-        border-radius: 6px;
-        padding: 8px 24px;
-        font-family: var(--font-body);
-        font-size: 1rem;
-        cursor: pointer;
-    }
-
-    .quiz-results button:hover {
-        filter: brightness(1.15);
     }
