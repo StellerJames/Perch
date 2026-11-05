@@ -141,6 +141,26 @@ form button {
 
 /*Search Page*/
 
+/*Search Bar with an eyeglass inside*/
+.search-bar {
+    display: block; /*sits on its own line*/
+    width: calc(100% - 32px); /*full width minus padding*/
+    margin: 0 16px 24px; /*TLRB: the 24px separates it from the results*/
+    padding: 14px 16px 14px 48px; /*the 48px on the left keeps the text from covering the eyeglass*/
+    background: var(--cream) url(images/icons/greySearch.svg) no-repeat 14px center/ 22px;
+    color: var(--ink);
+    border: none;
+    border-radius: 12px;
+    box-shadow: 4px 6px 6px rgba(0, 0, 0, 0.35); /*matches the bird cards*/
+    font-family: var(--font-body);
+    font-size: 1rem;
+}
+
+/*The grey hint text*/
+.search-bar::placeholder {
+    color: var(--stone);
+}
+
 /*One card per bird (BirdCard component).*/
 .bird-card {
     display: flex; /*photo on the left, names on the right*/
