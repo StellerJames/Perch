@@ -96,51 +96,50 @@ h1 {
             width: 5rem;
         }
 
-/*Shared look for action buttons across the app.*/
-.step-buttons button,
-.add-sighting button,
-.add-nemesis button,
-.sighting-card button,
-.quiz-feedback button,
-.quiz-results button,
-form button {
-    background: var(--rust);
-    color: var(--cream);
-    border: none;
-    border-radius: 8px;
-    padding: 10px 28px; /*top and bottom, left and right*/
-    font-family: var(--font-body);
-    font-size: 1rem;
-    box-shadow: 4px 6px 6px rgba(0, 0, 0, 0.35); /*matches the bird cards*/
-    cursor: pointer; /*shows the hand pointer on hover*/
-}
-
-    /*Slightly lighter when hovered.*/
-    .step-buttons button:hover,
-    .add-sighting button:hover,
-    .add-nemesis button:hover,
-    .sighting-card button:hover,
-    .quiz-feedback button:hover,
-    .quiz-results button:hover,
-    form button:hover {
-        filter: brightness(1.15);
+    /*Shared look for action buttons across the app.*/
+    .step-buttons button,
+    .add-sighting button,
+    .add-nemesis button,
+    .sighting-card button,
+    .quiz-feedback button,
+    .quiz-results button,
+    .auth-status button,
+    form button {
+        background: var(--rust);
+        color: var(--cream);
+        border: none;
+        border-radius: 8px;
+        padding: 10px 28px; /*top and bottom, left and right*/
+        font-family: var(--font-body);
+        font-size: 1rem;
+        box-shadow: 4px 6px 6px rgba(0, 0, 0, 0.35); /*matches the bird cards*/
+        cursor: pointer; /*shows the hand pointer on hover*/
     }
 
-    /*Next stays gray and flat until the user picks an answer.*/
-    .step-buttons button:disabled {
-        background: var(--stone);
-        box-shadow: none;
-        filter: none;
-        cursor: default;
+        /*Slightly lighter when hovered.*/
+        .step-buttons button:hover,
+        .add-sighting button:hover,
+        .add-nemesis button:hover,
+        .sighting-card button:hover,
+        .quiz-feedback button:hover,
+        .quiz-results button:hover,
+        .auth-status button:hover,
+        form button:hover {
+            filter: brightness(1.15);
+        }
+
+        /*Next stays gray and flat until the user picks an answer.*/
+        .step-buttons button:disabled {
+            background: var(--stone);
+            box-shadow: none;
+            filter: none;
+            cursor: default;
+        }
+    /*Daily List cards: a little space between the buttons.*/
+    .sighting-card button {
+        margin: 8px 4px 0 0;
     }
-
-/*Daily List cards: a little space between the buttons.*/
-.sighting-card button {
-    margin: 8px 4px 0 0;
-}
-
 /*Search Page*/
-
 /*Search Bar with an eyeglass inside*/
 .search-bar {
     display: block; /*sits on its own line*/
@@ -155,12 +154,10 @@ form button {
     font-family: var(--font-body);
     font-size: 1rem;
 }
-
-/*The grey hint text*/
-.search-bar::placeholder {
-    color: var(--stone);
-}
-
+    /*The grey hint text*/
+    .search-bar::placeholder {
+        color: var(--stone);
+    }
 /*One card per bird (BirdCard component).*/
 .bird-card {
     display: flex; /*photo on the left, names on the right*/
@@ -191,7 +188,65 @@ form button {
     .bird-card p {
         margin: 0;
     }
+/*Log In and Create Account Pages*/
+.auth-title {
+    margin: 12dvh 16px 18dvh;
+    font-size: 2.4rem;
+    text-align: center;
+    text-transform: uppercase /*all capital letters*/
+}
 
+.auth-form {
+    display: flex;
+    flex-direction: column; /*stacks boxes and button*/
+    gap: 22px;
+    width: min(100% - 80px, 400px); /*fills phone screen, but doesn't exceed 400px*/
+    margin: 0 auto; /*centers the form*/
+}
+
+    .auth-form input {
+        width: 100%;
+        padding: 15px 16px;
+        background: var(--cream);
+        color: var(--ink);
+        border: none;
+        border-radius: 12px;
+        box-shadow: 4px 6px 6px rgba(0, 0, 0, 0.35);
+        font-family: var(--font-body);
+        font-size: 1rem;
+    }
+
+        .auth-form input::placeholder {
+            color: var(--stone);
+        }
+    /*Bigger than the other buttons*/
+    .auth-form button {
+        align-self: center; /*centers the button instead of stretching it*/
+        margin-top: 8dvh;
+        padding: 10px 48px;
+        font-size: 2.2rem;
+        border-radius: 12px;
+        text-transform: uppercase;
+    }
+
+.auth-link {
+    display: block;
+    margin-top: 8dvh;
+    color: var(--cream);
+    text-align: center;
+    text-transform: uppercase;
+}
+/*Shown when already logged in.*/
+.auth-status {
+    margin: 0 16px;
+    text-align: center;
+}
+/*Wrong username or password message.*/
+.error {
+    margin: 16px;
+    color: #FFC9B8;
+    text-align: center;
+}
 /*Blazor template: form validation and error banner*/
 h1:focus {
     outline: none;
@@ -206,7 +261,8 @@ h1:focus {
 }
 
 .validation-message {
-    color: #e50000;
+    color: #FFC9B8; /*light coral, easier to read on teal than dark red*/
+    font-size: 0.9rem;
 }
 
 .blazor-error-boundary {
