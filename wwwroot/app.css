@@ -233,9 +233,20 @@ h1 {
     display: block;
     margin-top: 8dvh;
     color: var(--cream);
+    font-size: 1.15rem;
     text-align: center;
     text-transform: uppercase;
 }
+
+/*Create Account has more boxes, so it uses smaller gaps.*/
+.auth-title.tight {
+    margin-bottom: 8dvh; /*was 18dvh: moves the boxes up*/
+}
+
+.auth-form.tight button {
+    margin-top: 4dvh; /*was 8dvh: moves the button up*/
+}
+
 /*Shown when already logged in.*/
 .auth-status {
     margin: 0 16px;

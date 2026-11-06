@@ -5,36 +5,31 @@
 
 <PageTitle>Create Account</PageTitle>
 <NavBar ShowHome="true" />
-<h1> Create Account </h1>
+<h1 class="auth-title tight">Create Account</h1>
 
-<EditForm Model="form" OnValidSubmit="CreateAccountAsync">
-    <DataAnnotationsValidator />
+<EditForm Model="form" OnValidSubmit="CreateAccountAsync" class="auth-form tight">
+    <DataAnnotationsValidator/>
 
-    <label for="username">Username</label>
-    <InputText id="username" @bind-Value="form.Username" />
+    <InputText id="username" placeholder="Username" aria-label="Username" @bind-Value="form.Username" />
     <ValidationMessage For="() => form.Username" />
 
-    
-    <label for="email">Email</label>
-    <InputText id="email" @bind-Value="form.Email" />
+    <InputText id="email" type="email" placeholder="Email" aria-label="Email" @bind-Value="form.Email" />
     <ValidationMessage For="() => form.Email" />
 
-    <label for="password">Password</label>
-    <InputText id="password" type="password" @bind-Value="form.Password" />
+    <InputText id="password" type="password" placeholder="Password" aria-label="Password" @bind-Value="form.Password" />
     <ValidationMessage For="() => form.Password" />
 
-    <label for="confirmPassword">Confirm Password</label>
-    <InputText id="confirmPassword" type="password" @bind-Value="form.ConfirmPassword" />
+    <InputText id="confirmPassword" type="password" placeholder="Confirm Password" aria-label="Confirm Password" @bind-Value="form.ConfirmPassword" />
     <ValidationMessage For="() => form.ConfirmPassword" />
 
-    <button type="submit">Create Account</button>
+    <button type="submit">Create</button>
 </EditForm>
 
 @if (errorMessage is not null)
 {
     <p class="error">@errorMessage</p>
-    <p>Already have an account? <a href="login">Log in</a></p>
 }
+<a href="login" class="auth-link">Log In</a>
 
 @code {
     private SignUpForm form = new();
@@ -42,16 +37,16 @@
 
     private class SignUpForm
     {
-        [Required]
+        [Required(ErrorMessage = "Please Choose a username.")]
         public string Username { get; set; } = "";
 
-        [Required, EmailAddress]
+        [Required(ErrorMessage = "Please enter your email."), EmailAddress(ErrorMessage = "Please enter a valid email.")]
         public string Email { get; set; } = "";
 
-        [Required, MinLength(8)]
+        [Required(ErrorMessage = "Please choose a password."), MinLength(8, ErrorMessage = "Password must be at least 8 characters long.")]
         public string Password { get; set; } = "";
 
-        [Required, Compare(nameof(Password), ErrorMessage = "Passwords do not match.")]
+        [Required(ErrorMessage = "Please confirm your password."), Compare(nameof(Password), ErrorMessage = "Passwords do not match.")]
         public string ConfirmPassword { get; set; } = "";    
     }
 
