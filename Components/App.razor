@@ -28,6 +28,14 @@
                 utterance.rate = 0.8;
                 speechSynthesis.speak(utterance);
             };
+            window.speakNames = (first, second) => {
+                speechSynthesis.cancel();
+                const firstName = new SpeechSynthesisUtterance(first);
+                const secondName = new SpeechSynthesisUtterance(second);
+                firstName.rate = 0.8;
+                secondName.rate = 0.8;
+                firstName.onend = () => setTimeout(() => speechSynthesis.speak(secondName), 400); speechSynthesis.speak(firstName);
+            };
     </script>
 
 </body>

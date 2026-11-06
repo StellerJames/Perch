@@ -16,7 +16,7 @@ else
 {
     <PageTitle>@bird.CommonName</PageTitle>
     //This is where each birds photo attribute will be displayed.
-    <img src="@bird.PhotoUrl" alt="Photo of a @bird.CommonName" class="bird-photo"/>
+    <img src="@bird.PhotoUrl" alt="Photo of a @bird.CommonName" class="bird-photo" />
     @if (featured is not null)
     {
         <p class="photo-credit">
@@ -41,47 +41,29 @@ else
         </p>
     }
 
-    <h1>@bird.CommonName</h1>
-    <div class="say-it">
+    <div class="bird-info">
+        <h1>@bird.CommonName</h1>
         @if (bird.CommonPronunciation is not null)
         {
             <p class="pronunciation">@bird.CommonPronunciation</p>
         }
-        <button type="button" class="listen-button"
-                aria-label="Hear how to say @bird.CommonName"
-                @onclick="() => SpeakAsync(bird.CommonName)">
-            <img src="images/icons/listenIcon.svg" alt="" />
-        </button>
-    </div>
-
-    <p><em>@bird.LatinName</em></p>
-    <div class="say-it">
+        <p><em>@bird.LatinName</em></p>
         @if (bird.LatinPronunciation is not null)
         {
             <p class="pronunciation">@bird.LatinPronunciation</p>
         }
-        <button type="button" class="listen-button"
-                aria-label="Hear how to say @bird.LatinName"
-                @onclick="() => SpeakAsync(bird.LatinName)">
+        <button type="button" class="listen-button" aria-label="Hear how to say @bird.CommonName and @bird.LatinName"
+        
+        @onclick="SpeakNamesAsync">
             <img src="images/icons/listenIcon.svg" alt="" />
         </button>
-    </div>
 
-    @if (bird.Description is not null)
-    {
-        <p>@bird.Description</p>
-    }
-    //Replace later with short description 
-    <dl class="bird-facts">
-        <dt>Family</dt>
-        <dd>@bird.FamilyName</dd>
-        <dt>Size</dt>
-        <dd>@bird.SizeText</dd>
-        <dt>Colors</dt>
-        <dd>@string.Join(", ", bird.Colors)</dd>
-        <dt>Habitats</dt>
-        <dd>@string.Join(", ", bird.Habitats)</dd>
-    </dl>
+        @if (bird.Description is not null)
+        {
+            <p class="bird-description">@bird.Description</p>
+        }
+        
+    </div>
 }
 
 @code {
@@ -100,9 +82,9 @@ else
         loading = false;
     }
 
-    //Speaker button: the browser reads the name out loud (speakText lives in App.razor)
-    private async Task SpeakAsync(string text)
+    //Listen button: says the common name, pauses, then says the Latin name (speakNames lives in App.razor)
+    private async Task SpeakNamesAsync()
     {
-        await JS.InvokeVoidAsync("speakText", text);
+        await JS.InvokeVoidAsync("speakNames", bird!.CommonName, bird.LatinName);
     }
 }
