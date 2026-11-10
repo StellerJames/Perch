@@ -10,6 +10,9 @@
     --font-body: 'Inter', system-ui, sans-serif; /*body text*/
 
     --photo-top-space: 40px; /*gap between the nav bar and a page's main bird photo*/
+
+    --vh: 1dvh; /*1% of the screen height. Use calc(N * var(--vh)) instead of Ndvh.
+                  The desktop phone frame changes this to 1% of its 844px screen.*/
 }
 
 /*Includes padding and border in width-height.*/
@@ -44,19 +47,25 @@ h1 {
 }
 /*Daily List*/
 
-/*"Add a sighting" form.*/
+/*Daily List "Add a sighting" form.*/
 .add-sighting {
     display: flex;
     flex-wrap: wrap; /*items move to a new line when they run out of room*/
     align-items: center; /*lines items up vertically in the middle*/
-    gap: 8px; /*space between each item*/
-    margin: 0 16px 24px; /*top, left/right, bottom*/
+    justify-content: center; /*centers each row across the screen*/
+    gap: 30px 8px; /*20px between rows, 8px between items in a row*/
+    margin: 60px 16px 72px; /*top, left/right, bottom: 32px before the "No birds" message*/
+}
+/*Centers "nothing here yet" messages*/
+.empty-message {
+    text-align: center;
 }
 
-    .add-sighting h2 {
-        width: 100%; /*a full-width heading forces it onto its own line*/
-        margin: 0;
-    }
+.add-sighting h2 {
+    width: 100%; /*a full-width heading forces it onto its own line*/
+    margin: 0;
+    text-align: center; /*centers "Add a sighting" over the form*/
+}
 
 /*Daily List: one card per sighting.*/
 .sighting-card {
@@ -85,7 +94,7 @@ h1 {
         color: var(--ink);
         border: 1px solid var(--stone);
         border-radius: 6px;
-        padding: 6px 8px;
+        padding: 12px 8px;
         font-family: var(--font-body);
         font-size: 1rem;
     }
@@ -190,7 +199,7 @@ h1 {
     }
 /*Log In and Create Account Pages*/
 .auth-title {
-    margin: 12dvh 16px 18dvh;
+    margin: calc(12 * var(--vh)) 16px calc(10 * var(--vh));
     font-size: 2.4rem;
     text-align: center;
     text-transform: uppercase /*all capital letters*/
@@ -222,7 +231,7 @@ h1 {
     /*Bigger than the other buttons*/
     .auth-form button {
         align-self: center; /*centers the button instead of stretching it*/
-        margin-top: 8dvh;
+        margin-top: calc(8 * var(--vh));
         padding: 10px 48px;
         font-size: 2.2rem;
         border-radius: 12px;
@@ -231,7 +240,7 @@ h1 {
 
 .auth-link {
     display: block;
-    margin-top: 8dvh;
+    margin-top: calc(8 * var(--vh));
     color: var(--cream);
     font-size: 1.15rem;
     text-align: center;
@@ -240,11 +249,11 @@ h1 {
 
 /*Create Account has more boxes, so it uses smaller gaps.*/
 .auth-title.tight {
-    margin-bottom: 8dvh; /*was 18dvh: moves the boxes up*/
+    margin-bottom: calc(8 * var(--vh)); /*was 18dvh: moves the boxes up*/
 }
 
 .auth-form.tight button {
-    margin-top: 4dvh; /*was 8dvh: moves the button up*/
+    margin-top: calc(4 * var(--vh)); /*was 8dvh: moves the button up*/
 }
 
 /*Shown when already logged in.*/
@@ -258,6 +267,43 @@ h1 {
     color: #FFC9B8;
     text-align: center;
 }
+
+/*Orange + button (Daily List and Nemesis List).
+  The SVG already has the orange square, so this removes the shared button background.*/
+button.add-icon-button {
+    background: none;
+    padding: 0;
+    border-radius: 8px; /*keeps the shadow's corners matching the tile*/
+}
+
+    button.add-icon-button img {
+        display: block; /*removes a small gap under the image*/
+        width: 56px;
+        height: 56px;
+    }
+
+/*Keeps page text off the screen edges. Cards already have their own side margins.*/
+.app-shell > p,
+.app-shell > details {
+    margin-left: 16px;
+    margin-right: 16px;
+}
+
+@media (min-width: 768px) and (hover: hover) and (pointer: fine) {
+    :root {
+        --vh: 8.44px; /*1% of the phone frame's 844px screen, not the laptop window*/
+    }
+
+    body {
+        background: #2b2b2b; /* the "desk" behind the phone; pick any color */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+    }
+}
+
 /*Blazor template: form validation and error banner*/
 h1:focus {
     outline: none;

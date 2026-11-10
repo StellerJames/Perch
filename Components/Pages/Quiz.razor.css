@@ -1,7 +1,7 @@
 ﻿/*Styles photo of the mystery bird*/
 .quiz-photo {
     display: block;
-    width: min(72%, 32dvh); /*72% of the viewport width, unless that's too tall, then it's 32dvh*/
+    width: min(72%, calc(32 * var(--vh))); /*72% of the viewport width, unless that's too tall, then it's 32% of the screen height*/
     max-width: 400px; /*never grows past this on bigger screens*/
     aspect-ratio: 1; /*keeps photo square*/
     object-fit: cover; /*crops image rather than stretches*/
@@ -15,10 +15,10 @@
 .quiz-choices {
     display: flex;
     flex-direction: column;
-    gap: clamp(8px, 2dvh, 36px); /*more space on taller screens*/
+    gap: clamp(8px, calc(2 * var(--vh)), 36px); /*more space on taller screens*/
     width: 72%;
     max-width: 400px;
-    margin: 0 auto 2dvh;
+    margin: 0 auto calc(2 * var(--vh));
 }
 
 /*Style answer buttons*/
@@ -62,7 +62,7 @@
 .quiz-credit {
     width: 72%;
     max-width: 400px;
-    margin: 0 auto 2dvh;
+    margin: 0 auto calc(2 * var(--vh));
     font-size: 0.7rem;
     text-align: center;
 }
@@ -91,11 +91,11 @@
 /*Message to user and Next Button*/
 .quiz-feedback {
     position: sticky;
-    bottom: 0; /*sticks to the bottom edge of the screen*/
-    margin-top: auto; /*takes a share of the spare space above the feedback*/
-    margin-bottom: auto; /*and below, which lifts it off the bottom edge*/
-    padding: 8px 16px;
-    background: var(--teal); /*so answers don't show through behind it*/
+    bottom: 0;                /*sticks to the bottom edge of the screen*/
+    margin-top: calc(1 * var(--vh));         /*small, fixed gap under the answer buttons*/
+    margin-bottom: auto;      /*all the spare space now goes below, lifting it off the bottom*/
+    padding: 8px 16px calc(3 * var(--vh));   /*top, left/right, bottom: extra room on short screens*/
+    background: var(--teal);  /*so answers don't show through behind it*/
     text-align: center;
 }
 

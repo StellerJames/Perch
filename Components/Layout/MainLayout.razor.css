@@ -20,9 +20,62 @@
     }
 
 .app-shell {
+    background: var(--teal); /*the phone screen keeps the app's color; body becomes the desk*/
     max-width: 430px; /*roughly the size of a large phone*/
     min-height: 100vh; /*fills the screen*/
     margin: 0 auto; /*horizontally centered*/
     display: flex;
     flex-direction: column;
+}
+
+/*Wide screens: show the app inside a white iPhone 15-style frame*/
+@media (min-width: 768px) and (hover: hover) and (pointer: fine) {
+    .app-shell {
+        width: 414px; /*390px screen + 12px bezel on each side*/
+        height: 868px; /*844px screen + 12px bezel on top and bottom*/
+        min-height: 0; /*cancels the 100vh above, which would make it taller than the phone*/
+        flex-shrink: 0; /*stops body's flexbox from squeezing it*/
+        overflow-y: auto; /*the app scrolls inside the "phone"*/
+        scrollbar-width: none; /*hides the scrollbar but still allows scrolling*/
+        background: var(--teal); /*the screen keeps the app color; body is the desk*/
+        border: 12px solid #fdfdfd; /*the white phone body*/
+        border-radius: 56px; /*the screen's corners automatically become 56 - 12 = 44px*/
+        box-shadow: 0 0 0 3px #dcdcdc, /*thin silver rim around the edge*/
+        0 24px 60px rgba(0, 0, 0, 0.45); /*soft shadow on the desk*/
+        transform: translateZ(0); /*keeps position: fixed elements inside the frame*/
+    }
+
+        /*Dynamic Island: the black camera cutout at the top of the screen*/
+        .app-shell::before {
+            content: ""; /*a pseudo-element needs content to appear, even if it's empty*/
+            position: fixed; /*stays put while the app scrolls*/
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%); /*centers it horizontally*/
+            width: 100px;
+            height: 30px;
+            background: #000;
+            border-radius: 15px; /*half the height = pill shape*/
+            z-index: 20; /*above the page content and the menu*/
+        }
+}
+
+/*Shrinks the whole phone on shorter laptop screens.
+  Later rules win, so the smallest screen is last.*/
+@media (min-width: 768px) and (hover: hover) and (pointer: fine) and (max-height: 920px) {
+    .app-shell {
+        zoom: 0.85;
+    }
+}
+
+@media (min-width: 768px) and (hover: hover) and (pointer: fine) and (max-height: 800px) {
+    .app-shell {
+        zoom: 0.75;
+    }
+}
+
+@media (min-width: 768px) and (hover: hover) and (pointer: fine) and (max-height: 700px) {
+    .app-shell {
+        zoom: 0.65;
+    }
 }

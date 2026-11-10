@@ -31,13 +31,13 @@ else
 
         <label for="count">How many?</label>
         <input id="count" type="number" min="1" @bind="newCount" />
-
         <button type="button" @onclick="AddSightingAsync">Add</button>
+
     </section>
 
     @if (!sightings.Any())
     {
-        <p>No birds logged yet today.</p>
+        <p class="empty-message">No birds logged yet today.</p>
     }
 
     @foreach (var sighting in sightings)

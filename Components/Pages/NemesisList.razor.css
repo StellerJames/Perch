@@ -8,11 +8,72 @@
         display: block;
     }
 
-.nemesis-intro summary {
-    cursor: pointer;     /*hand cursor to appear clickable*/
+    .nemesis-intro summary {
+        cursor: pointer; /*hand cursor to appear clickable*/
+    }
+
+    /*when the details box is open, hide the ellipsis*/
+    .nemesis-intro[open] .more {
+        display: none;
+    }
+
+/*space between the dropdown row and the first bird card*/
+.add-nemesis {
+    margin-bottom: 1.75rem;
 }
 
-/*when the details box is open, hide the ellipsis*/
-.nemesis-intro[open] .more {
-    display: none;
+/*places trashcan icon on top of bird card*/
+.nemesis-item {
+    position: relative;
 }
+
+/*trash positioned to the right side of the bird card*/
+.remove-button {
+    position: absolute;
+    top: 0;
+    bottom: 16px; /*matches the card's bottom margin, so it centers on the card itself*/
+    right: 28px; /*card's 16px side margin + 10px padding, plus a little extra*/
+    display: flex;
+    align-items: center; /*centers the icon up and down*/
+    background: none; /*removes the grey button box*/
+    border: none;
+    padding-right: 20px;
+    cursor: pointer;
+}
+
+    .remove-button img {
+        width: 28px;
+        height: 28px;
+    }
+
+/*makes room on the right of the card for the trash can*/
+.nemesis-item ::deep .bird-card {
+    padding-right: 60px;
+}
+
+/*dropdown and Add on one row, off the screen edges, with space above the first bird card*/
+.add-nemesis {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin: 0 16px 1.75rem;
+}
+
+    /*Nemesis dropdown: same height as the Add button, and fills the rest of the row*/
+    .add-nemesis select {
+        flex: 1; /*takes up the leftover space in the row*/
+        min-width: 0; /*lets it shrink on narrow phones instead of pushing Add off screen*/
+        padding: 10px 12px; /*same top/bottom padding as the Add button, so the heights match*/
+        font-family: var(--font-body);
+        font-size: 1rem; /*same text size as the button*/
+        background: var(--cream);
+        color: var(--ink);
+        border: none;
+        border-radius: 8px; /*same rounded corners as the button*/
+        box-shadow: 4px 6px 6px rgba(0, 0, 0, 0.35); /*matches the button and bird cards*/
+    }
+
+    /*Nemesis Add button: changes only this button, not the other Add buttons*/
+    .add-nemesis button {
+        padding: 12px 32px; /*top/bottom, left/right*/
+    }

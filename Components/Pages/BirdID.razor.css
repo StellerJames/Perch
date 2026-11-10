@@ -2,27 +2,20 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
-    width: min(100% - 32px, 37dvh);
+    width: min(100% - 32px, calc(37 * var(--vh)));
     max-width: 420px;
     margin: auto;
-}
-
-@media (min-width: 700px) {
-    .tile-grid {
-        grid-template-columns: repeat(3, 1fr);
-        max-width: 600px;
-    }
 }
 
 .step-buttons {
     position: sticky;
     bottom: 0;
-    margin-top: auto; /*takes a share of the spare space above the buttons*/
-    margin-bottom: auto; /*and below, which lifts them off the bottom edge*/
+    margin-top: calc(2 * var(--vh)); /*small, fixed gap under the tiles or map*/
+    margin-bottom: auto; /*spare space goes below, lifting the buttons off the bottom edge*/
     display: flex;
     justify-content: center;
     gap: 1rem;
-    padding: 8px 16px;
+    padding: 8px 16px calc(3 * var(--vh)); /*top, left/right, bottom: extra room on short screens*/
     background: var(--teal);
 }
 
@@ -30,7 +23,7 @@
 /* layers stacked on top of each other, all same size */
 .region-map {
     position: relative; /* the layers and buttons are placed inside this box*/
-    width: min(100% - 32px, 41dvh);
+    width: min(100% - 32px, calc(41 * var(--vh)));
     max-width: 420px;
     margin: auto;
 }

@@ -1,8 +1,8 @@
 ﻿/* Nav Bar (Pancake Menu, Home, and Search icons) */
 .nav-bar {
     display: flex;
-    justify-content: space-between; 
-    align-items: center; 
+    justify-content: space-between;
+    align-items: center;
     padding: 20px 24px 0 16px; /* top right bottom left */
 }
 
@@ -60,8 +60,13 @@
 
 /* Slides the panel in from the left when it appears */
 @keyframes slide-in {
-    from { transform: translateX(-100%); }
-    to { transform: translateX(0); }
+    from {
+        transform: translateX(-100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
 }
 
 .menu-close {
@@ -120,3 +125,10 @@
     .chevron.open {
         transform: rotate(180deg); /* arrow then collapses the Bird Lists */
     }
+
+/*Phone frame on wide screens: keeps the icons below the Dynamic Island*/
+@media (min-width: 768px) and (hover: hover) and (pointer: fine) {
+    .nav-bar {
+        padding-top: 50px;
+    }
+}

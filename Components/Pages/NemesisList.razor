@@ -26,11 +26,8 @@ else if (nemeses is null)
 else
 {
     <section class="add-nemesis">
-        <h2>Name Your Nemesis</h2>
-
-        <label for="nemesis-bird">Bird</label>
-        <select id="nemesis-bird" @bind="newBirdId">
-            <option value="0">Choose a bird…</option>
+        <select id="nemesis-bird" aria-label="Choose a nemesis bird" @bind="newBirdId">
+            <option value="0">Name Your Nemesis Bird</option>
             @foreach (var bird in choices)
             {
                 <option value="@bird.BirdId">@bird.CommonName</option>
@@ -42,7 +39,7 @@ else
 
     @if (!nemeses.Any())
     {
-        <p>No nemesis birds yet. Lucky you!</p>
+        <p>No nemesis birds yet. Start beef with a bird today!</p>
     }
 
     @foreach (var bird in nemeses)
@@ -66,7 +63,7 @@ else
     private List<Bird> lifeList = new(); //birds the user has already seen
     private List<Bird> choices = new(); //dropdown options
     private int newBirdId; //0 = no choice made
-
+    
     protected override async Task OnInitializedAsync()
     {
         if (CurrentUser.UserId is null) return; //not logged in, stop here
